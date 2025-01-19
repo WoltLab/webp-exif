@@ -1,0 +1,27 @@
+{
+  "name": "woltlab/webp-exif",
+  "description": "Extract and embed EXIF metadata from and to WebP images",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "exif",
+    "webp"
+  ],
+  "require": {
+    "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+    "ext-exif": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Woltlab\\WebpExif\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --colors=always test",
+    "phpstan": "phpstan"
+  }
+}
