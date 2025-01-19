@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Woltlab\WebpExif;
 
-use InvalidArgumentException;
+use TypeError;
 
 final class WebP
 {
     private function __construct(
+        public readonly int $width,
+        public readonly int $height,
         /** @var list<Chunk> */
         private array $chunks,
     ) {}
@@ -29,13 +31,13 @@ final class WebP
     {
         return \array_reduce(
             $this->chunks,
-            static fn(int $length, Chunk $chunk) => $length += $chunk->length + 8,
+            static fn(int $length, Chunk $chunk) => $length + $chunk->length + 8,
             0
         );
     }
 
     /**
-     * @return array{'length': int, 'chunks': list<string>}
+     * @return array{'length': int, 'width': int, 'height': int, 'chunks': list<string>}
      */
     public function debugInfo(): array
     {
@@ -52,6 +54,8 @@ final class WebP
 
         return [
             'length' => $this->getByteLength(),
+            'width' => $this->width,
+            'height' => $this->height,
             'chunks' => $chunkInfo,
         ];
     }
@@ -59,14 +63,20 @@ final class WebP
     /**
      * @param list<Chunk> $chunks
      */
-    public static function fromChunks(array $chunks): self
+    public static function fromChunks(int $width, int $height, array $chunks): self
     {
         foreach ($chunks as $chunk) {
             if (!($chunk instanceof Chunk)) {
-                throw new InvalidArgumentException("TODO: not a webp chunk");
+                throw new TypeError(
+                    \sprintf(
+                        "Expected a list of %s, received %s instead",
+                        Chunk::class,
+                        \gettype($chunk),
+                    ),
+                );
             }
         }
 
-        return new self($chunks);
+        return new self($width, $height, $chunks);
     }
 }

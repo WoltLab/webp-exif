@@ -17,6 +17,8 @@ final class DecodeVP8LTest extends TestCase
 
         $this->assertSame([
             'length' => 14,
+            'width' => 11330,
+            'height' => 446,
             'chunks' => [
                 'Chunk VP8L (length 6)'
             ],

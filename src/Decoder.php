@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use RuntimeException;
+use TypeError;
 
 final class Decoder
 {
@@ -39,10 +40,14 @@ final class Decoder
 
         $offset = 12;
         $topChunk = $this->decodeChunk($binary, $offset);
+        $offset += 8;
+
         switch ($topChunk->type) {
             case ChunkType::VP8:
+                return $this->decodeLossy($binary, $offset, $topChunk);
+
             case ChunkType::VP8L:
-                return WebP::fromChunks([$topChunk]);
+                return $this->decodeLossless($binary, $offset, $topChunk);
 
             case ChunkType::VP8X:
                 // We're implicitly discarding the top chunk here because it
@@ -50,11 +55,81 @@ final class Decoder
                 // `$binary` and using the `$topChunk` means we have to reset
                 // the offset. Preserving the existing offset means we can
                 // output meaningful offsets in error messages if we need to.
-                return $this->decodeExtendedHeader($binary, $offset + 8);
+                return $this->decodeExtendedHeader($binary, $offset);
 
-            default:
-                throw new RuntimeException("TODO: unexpected chunk {$topChunk->fourCC} at offset {$offset}");
+            default: {
+                    $originalOffset = $offset - 8;
+                    throw new RuntimeException("TODO: unexpected chunk {$topChunk->fourCC} at offset {$originalOffset}");
+                }
         }
+    }
+
+    /**
+     * @see https://datatracker.ietf.org/doc/html/rfc6386
+     */
+    private function decodeLossy(string $binary, int $offset, Chunk $topChunk): WebP
+    {
+        $totalSize = \strlen($binary);
+
+        $header = \unpack('ctag', $binary, $offset);
+        \assert($header !== false);
+
+        $offset += 1;
+
+        // We expect the first frame to be a keyframe.
+        $frameType = $header['tag'] & 1;
+        if ($frameType !== 0) {
+            throw new RuntimeException("Expected the first frame to be a keyframe");
+        }
+
+        // Skip the next two bytes, they are part of the header but do not
+        // contain any information that is relevant to us.
+        $offset += 2;
+
+        // Keyframes must start with 3 magic bytes.
+        if ($binary[$offset] !== "\x9D" || $binary[$offset + 1] !== "\x01" || $binary[$offset + 2] !== "\x2A") {
+            throw new RuntimeException("Expected the magic bytes 0x9D 0x01 0x2A at the start of the keyframe");
+        }
+
+        $offset += 3;
+
+        // The width and height are encoded using 2 bytes each. However, the
+        // first two bits are the scale followed by 14 bits for the dimension.
+        $dimensions = \unpack('vwidth/vheight', $binary, $offset);
+        \assert($dimensions !== false);
+
+        $width = $dimensions['width'] & 0x3FFF;
+        $height = $dimensions['height'] & 0x3FFF;
+
+        return WebP::fromChunks($width, $height, [$topChunk]);
+    }
+
+    private function decodeLossless(string $binary, int $offset, Chunk $topChunk): WebP
+    {
+        if ($binary[$offset] !== "\x2F") {
+            throw new RuntimeException("TODO: invalid signature for lossless");
+        }
+
+        $offset += 1;
+
+        $header = \unpack("Vheader", $binary, $offset);
+        \assert($header !== false);
+
+        // The header contains the following data:
+        // 0-13: width - 1
+        // 14-27: height - 1
+        // 28: alpha_is_used
+        // 29-31: version (must be 0)
+        $header = $header['header'];
+        $version = $header >> 29;
+        if ($version !== 0) {
+            throw new RuntimeException("Expected the version to be 0, found {$version} instead");
+        }
+
+        $width = (1 + $header) & 0x3FFF;
+        $height = (1 + ($header >> 14)) & 0x3FFF;
+
+        return WebP::fromChunks($width, $height, [$topChunk]);
     }
 
     private function decodeExtendedHeader(string $binary, int $offset): WebP
@@ -96,7 +171,7 @@ final class Decoder
             throw new RuntimeException("TODO: VP8X contains no data");
         }
 
-        return WebP::fromChunks($chunks);
+        return WebP::fromChunks($width, $height, $chunks);
     }
 
     private function decodeChunk(string $binary, int $offset): Chunk
