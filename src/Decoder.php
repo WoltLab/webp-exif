@@ -101,16 +101,24 @@ final class Decoder
 
     private function decodeChunk(string $binary, int $offset): Chunk
     {
+        $totalSize = \strlen($binary);
+        if ($offset + 8 > $totalSize) {
+            $remainingBytes = $totalSize - $offset;
+            throw new RuntimeException("Unexpected EOF, expected a chunk at offset {$offset} but there are only {$remainingBytes} more bytes");
+        }
+
         $header = \unpack('A4fourCC/Vlength', $binary, $offset);
         \assert($header !== false);
 
+        $offset += 8;
+
         $fourCC = $header['fourCC'];
         $length = $header['length'];
-        if ($length + 8 > \strlen($binary)) {
+        if ($offset + $length > $totalSize) {
             throw new RuntimeException("TODO: length {$length} for chunk {$fourCC} at offset {$offset} is out of bounds");
         }
 
-        return new Chunk($fourCC, \substr($binary, $offset + 8, $length));
+        return new Chunk($fourCC, \substr($binary, $offset, $length));
     }
 
     private function decodeDimension(string $binary, int $offset): int
