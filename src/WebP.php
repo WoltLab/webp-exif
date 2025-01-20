@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use TypeError;
+use Woltlab\WebpExif\Chunk\Chunk as IChunk;
 
 final class WebP
 {
     private function __construct(
         public readonly int $width,
         public readonly int $height,
-        /** @var list<Chunk> */
+        /** @var list<Chunk|IChunk> */
         private array $chunks,
     ) {}
 
     /**
-     * @return list<Chunk>
+     * @return list<Chunk|IChunk>
      */
     public function getChunks(): array
     {
@@ -31,7 +32,11 @@ final class WebP
     {
         return \array_reduce(
             $this->chunks,
-            static fn(int $length, Chunk $chunk) => $length + $chunk->length + 8,
+            static function (int $length, Chunk|IChunk $chunk) {
+                $chunkLength = $chunk instanceof IChunk ? $chunk->getLength() : $chunk->length;
+
+                return $length + $chunkLength + 8;
+            },
             0
         );
     }
@@ -42,7 +47,15 @@ final class WebP
     public function debugInfo(): array
     {
         $chunkInfo = \array_map(
-            static function (Chunk $chunk) {
+            static function (Chunk|IChunk $chunk) {
+                if ($chunk instanceof IChunk) {
+                    return \sprintf(
+                        "Chunk %s (length %d)",
+                        $chunk->getFourCC(),
+                        $chunk->getLength(),
+                    );
+                }
+
                 return \sprintf(
                     "Chunk %s (length %d)",
                     $chunk->fourCC,
@@ -61,12 +74,12 @@ final class WebP
     }
 
     /**
-     * @param list<Chunk> $chunks
+     * @param list<Chunk|IChunk> $chunks
      */
     public static function fromChunks(int $width, int $height, array $chunks): self
     {
         foreach ($chunks as $chunk) {
-            if (!($chunk instanceof Chunk)) {
+            if (!($chunk instanceof Chunk) && !($chunk instanceof IChunk)) {
                 throw new TypeError(
                     \sprintf(
                         "Expected a list of %s, received %s instead",

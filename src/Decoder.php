@@ -8,6 +8,7 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use RuntimeException;
 use TypeError;
+use Woltlab\WebpExif\Chunk\Vp8l;
 
 final class Decoder
 {
@@ -109,36 +110,9 @@ final class Decoder
 
     private function decodeLossless(Buffer $buffer): WebP
     {
-        $length = $buffer->getUnsignedInt();
-        $startOfData = $buffer->position();
+        $vp8l = Vp8l::fromBuffer($buffer);
 
-        $signature = $buffer->getUnsignedByte();
-        if ($signature !== 0x2F) {
-            throw new RuntimeException("TODO: invalid signature for lossless");
-        }
-
-        $header = $buffer->getUnsignedInt();
-
-        // The header contains the following data:
-        // 0-13: width - 1
-        // 14-27: height - 1
-        // 28: alpha_is_used
-        // 29-31: version (must be 0)
-        $version = $header >> 29;
-        if ($version !== 0) {
-            throw new RuntimeException("Expected the version to be 0, found {$version} instead");
-        }
-
-        $width = ($header & 0x3FFF) + 1;
-        $height = (($header >> 14) & 0x3FFF) + 1;
-
-        return WebP::fromChunks(
-            $width,
-            $height,
-            [
-                new Chunk("VP8L", $buffer->setPosition($startOfData)->getString($length))
-            ]
-        );
+        return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
     }
 
     private function decodeExtendedHeader(Buffer $buffer): WebP
