@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
-use RuntimeException;
+use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
+use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
 
 final class Vp8l extends Chunk
 {
@@ -24,7 +25,7 @@ final class Vp8l extends Chunk
 
         $signature = $buffer->getUnsignedByte();
         if ($signature !== 0x2F) {
-            throw new RuntimeException("TODO: invalid signature for lossless");
+            throw new MissingMagicByte("VP8L");
         }
 
         $header = $buffer->getUnsignedInt();
@@ -36,7 +37,7 @@ final class Vp8l extends Chunk
         // 29-31: version (must be 0)
         $version = $header >> 29;
         if ($version !== 0) {
-            throw new RuntimeException("Expected the version to be 0, found {$version} instead");
+            throw new UnsupportedVersion("VP8L", $version, 0);
         }
 
         $width = ($header & 0x3FFF) + 1;

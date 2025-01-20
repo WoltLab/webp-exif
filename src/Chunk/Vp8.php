@@ -6,6 +6,8 @@ namespace Woltlab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
 use RuntimeException;
+use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
+use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
 
 final class Vp8 extends Chunk
 {
@@ -27,7 +29,7 @@ final class Vp8 extends Chunk
         // We expect the first frame to be a keyframe.
         $frameType = $tag & 1;
         if ($frameType !== 0) {
-            throw new RuntimeException("Expected the first frame to be a keyframe");
+            throw new ExpectedKeyFrame();
         }
 
         // Skip the next two bytes, they are part of the header but do not
@@ -37,7 +39,7 @@ final class Vp8 extends Chunk
         // Keyframes must start with 3 magic bytes.
         $marker = $buffer->getString(3);
         if ($marker !== "\x9D\x01\x2A") {
-            throw new RuntimeException("Expected the magic bytes 0x9D 0x01 0x2A at the start of the keyframe");
+            throw new MissingMagicByte("VP8");
         }
 
         // The width and height are encoded using 2 bytes each. However, the

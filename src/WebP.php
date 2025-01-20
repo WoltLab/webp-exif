@@ -72,7 +72,7 @@ final class WebP
                     \sprintf(
                         "Expected a list of %s, received %s instead",
                         Chunk::class,
-                        \gettype($chunk),
+                        \get_debug_type($chunk),
                     ),
                 );
             }

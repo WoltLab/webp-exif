@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Woltlab\WebpExif\Chunk\Exception;
+
+use RuntimeException;
+
+/** @internal */
+final class UnsupportedVersion extends RuntimeException
+{
+    public function __construct(string $fourCC, int $found, int $expected)
+    {
+        parent::__construct("Expected version `{$expected}` for `{$fourCC}` but found `{$found}`");
+    }
+}
