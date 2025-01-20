@@ -8,6 +8,8 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use RuntimeException;
 use TypeError;
+use Woltlab\WebpExif\Chunk\Exif;
+use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 
@@ -114,7 +116,7 @@ final class Decoder
 
             // RIFF requires all chunks to be of even length, chunks with an
             // uneven length must be padded by a single 0x00 at the end.
-            if ($chunk->length % 2 === 1) {
+            if ($chunk->getLength() % 2 === 1) {
                 $buffer->skip(1);
             }
         }
@@ -126,7 +128,7 @@ final class Decoder
         return WebP::fromChunks($width, $height, $chunks);
     }
 
-    private function decodeChunk(Buffer $buffer): Chunk
+    private function decodeChunk(Buffer $buffer): \Woltlab\WebpExif\Chunk\Chunk
     {
         $remainingBytes = $buffer->remaining();
         if ($remainingBytes < 8) {
@@ -141,7 +143,22 @@ final class Decoder
             throw new RuntimeException("TODO: length {$length} for chunk {$fourCC} at offset {$offset} is out of bounds");
         }
 
-        return new Chunk($fourCC, $buffer->getString($length));
+        switch (ChunkType::fromFourCC($fourCC)) {
+            case ChunkType::EXIF:
+                return Exif::forBytes($buffer->getString($length));
+
+            case ChunkType::VP8:
+                return Vp8::fromBuffer($buffer);
+
+            case ChunkType::VP8L:
+                return Vp8l::fromBuffer($buffer);
+
+            case ChunkType::VP8X:
+                throw new RuntimeException("TODO: unexpected VP8X chunk inside of a VP8X chunk");
+
+            default:
+                return UnknownChunk::forBytes($fourCC, $buffer->getString($length));
+        }
     }
 
     private function decodeDimension(Buffer $buffer): int

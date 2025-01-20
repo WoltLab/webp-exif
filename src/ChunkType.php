@@ -14,7 +14,7 @@ enum ChunkType
     case VP8L;
     case VP8X;
     case XMP;
-    case Unknown;
+    case UnknownChunk;
 
     public static function fromFourCC(string $fourCC): self
     {
@@ -27,7 +27,7 @@ enum ChunkType
             "VP8L" => self::VP8L,
             "VP8X" => self::VP8X,
             "XMP " => self::XMP,
-            default => self::Unknown,
+            default => self::UnknownChunk,
         };
     }
 }
