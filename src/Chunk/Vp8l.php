@@ -50,6 +50,10 @@ final class Vp8l implements Chunk
         $width = ($header & 0x3FFF) + 1;
         $height = (($header >> 14) & 0x3FFF) + 1;
 
-        return new Vp8l($width, $height, $buffer->setPosition($startOfData)->getString($length));
+        return new Vp8l(
+            $width,
+            $height,
+            $buffer->setPosition($startOfData)->getString($length)
+        );
     }
 }

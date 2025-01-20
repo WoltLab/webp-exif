@@ -8,6 +8,7 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use RuntimeException;
 use TypeError;
+use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 
 final class Decoder
@@ -72,40 +73,9 @@ final class Decoder
      */
     private function decodeLossy(Buffer $buffer): WebP
     {
-        $length = $buffer->getUnsignedInt();
-        $startOfData = $buffer->position();
-        //$totalSize = \strlen($binary);
+        $vp8 = Vp8::fromBuffer($buffer);
 
-        $tag = $buffer->getUnsignedByte();
-
-        // We expect the first frame to be a keyframe.
-        $frameType = $tag & 1;
-        if ($frameType !== 0) {
-            throw new RuntimeException("Expected the first frame to be a keyframe");
-        }
-
-        // Skip the next two bytes, they are part of the header but do not
-        // contain any information that is relevant to us.
-        $buffer->skip(2);
-
-        // Keyframes must start with 3 magic bytes.
-        $marker = $buffer->getString(3);
-        if ($marker !== "\x9D\x01\x2A") {
-            throw new RuntimeException("Expected the magic bytes 0x9D 0x01 0x2A at the start of the keyframe");
-        }
-
-        // The width and height are encoded using 2 bytes each. However, the
-        // first two bits are the scale followed by 14 bits for the dimension.
-        $width = $buffer->getUnsignedShort() & 0x3FFF;
-        $height = $buffer->getUnsignedShort() & 0x3FFF;
-
-        return WebP::fromChunks(
-            $width,
-            $height,
-            [
-                new Chunk("VP8 ", $buffer->setPosition($startOfData)->getString($length))
-            ]
-        );
+        return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
     }
 
     private function decodeLossless(Buffer $buffer): WebP
@@ -117,9 +87,12 @@ final class Decoder
 
     private function decodeExtendedHeader(Buffer $buffer): WebP
     {
-        // After the `VP8X` header there are 4 more bytes that appear to have no
-        // meaning but the first byte is always set to 0x0A.
-        $buffer->skip(4);
+        // The next 4 bytes represent the length of the VP8X header which must
+        // be 10 bytes long.
+        $length = $buffer->getUnsignedInt();
+        if ($length !== 10) {
+            throw new RuntimeException("TODO: length of the VP8X header must be 10");
+        }
 
         // The following 4 bytes contain a single byte containing a bitmask for
         // the contained features (which we can safely ignore at this point),
