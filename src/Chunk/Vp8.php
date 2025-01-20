@@ -7,22 +7,14 @@ namespace Woltlab\WebpExif\Chunk;
 use Nelexa\Buffer\Buffer;
 use RuntimeException;
 
-final class Vp8 implements Chunk
+final class Vp8 extends Chunk
 {
     private function __construct(
         public readonly int $width,
         public readonly int $height,
-        private string $data,
-    ) {}
-
-    public function getLength(): int
-    {
-        return \strlen($this->data);
-    }
-
-    public function getFourCC(): string
-    {
-        return "VP8 ";
+        string $data,
+    ) {
+        parent::__construct("VP8 ", $data);
     }
 
     public static function fromBuffer(Buffer $buffer): self

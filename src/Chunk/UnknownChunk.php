@@ -7,23 +7,8 @@ namespace Woltlab\WebpExif\Chunk;
 use RuntimeException;
 use Woltlab\WebpExif\ChunkType;
 
-final class UnknownChunk implements Chunk
+final class UnknownChunk extends Chunk
 {
-    private function __construct(
-        private readonly string $fourCC,
-        private readonly string $data
-    ) {}
-
-    public function getFourCC(): string
-    {
-        return $this->fourCC;
-    }
-
-    public function getLength(): int
-    {
-        return \strlen($this->data);
-    }
-
     public static function forBytes(string $fourCC, string $bytes): self
     {
         if (ChunkType::fromFourCC($fourCC) !== ChunkType::UnknownChunk) {

@@ -7,11 +7,14 @@ namespace Woltlab\WebpExif;
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use RuntimeException;
-use TypeError;
+use Woltlab\WebpExif\Chunk\Alph;
+use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Exif;
+use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
+use Woltlab\WebpExif\Chunk\Xmp;
 
 final class Decoder
 {
@@ -144,8 +147,17 @@ final class Decoder
         }
 
         switch (ChunkType::fromFourCC($fourCC)) {
+            case ChunkType::ALPH:
+                return Alph::forBytes($buffer->getString($length));
+
+            case ChunkType::ANIM:
+                return Anim::forBytes($buffer->getString($length));
+
             case ChunkType::EXIF:
                 return Exif::forBytes($buffer->getString($length));
+
+            case ChunkType::ICCP:
+                return Iccp::forBytes($buffer->getString($length));
 
             case ChunkType::VP8:
                 return Vp8::fromBuffer($buffer);
@@ -155,6 +167,9 @@ final class Decoder
 
             case ChunkType::VP8X:
                 throw new RuntimeException("TODO: unexpected VP8X chunk inside of a VP8X chunk");
+
+            case ChunkType::XMP:
+                return Xmp::forBytes($buffer->getString($length));
 
             default:
                 return UnknownChunk::forBytes($fourCC, $buffer->getString($length));

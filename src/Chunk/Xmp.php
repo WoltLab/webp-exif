@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Woltlab\WebpExif\Chunk;
 
-final class Exif extends Chunk
+final class Xmp extends Chunk
 {
     private function __construct(string $data)
     {
-        parent::__construct("EXIF", $data);
+        parent::__construct("XMP ", $data);
     }
 
     public static function forBytes(string $bytes): self
     {
-        return new Exif($bytes);
+        return new Xmp($bytes);
     }
 }
