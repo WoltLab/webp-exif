@@ -16,11 +16,11 @@ final class Decoder
         // A RIFF container at its minimum contains the "RIFF" header, a
         // uint32LE representing the chunk size, the "WEBP" type and the data
         // section. The data section of a WebP at minimum contains one chunk
-        // (header + uint32LE + data). We assume the data to be non empty which
-        // is at least 1 byte, also RIFF requires chunks to have an even length
-        // which forces a 0x00 padding byte, upping this to 2. The smallest
-        // possible length of a WebP, regardless of the data, thus is 2x 12 + 2
-        // bytes = 26 bytes.
+        // (header + uint32LE + data).
+        //
+        // The shortest possible WebP image is a simple VP8L container that
+        // contains only the magic byte, a uint32 for the flags and dimensions,
+        // and at last a single byte of data. This takes up 26 bytes in total.
         if ($totalSize < 26) {
             throw new RuntimeException("TODO: too small");
         }
