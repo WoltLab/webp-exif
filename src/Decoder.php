@@ -53,17 +53,16 @@ final class Decoder
         $fourCC = $buffer->getString(4);
         switch (ChunkType::fromFourCC($fourCC)) {
             case ChunkType::VP8:
-                return $this->decodeLossy($buffer);
+                $vp8 = Vp8::fromBuffer($buffer);
+
+                return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
 
             case ChunkType::VP8L:
-                return $this->decodeLossless($buffer);
+                $vp8l = Vp8l::fromBuffer($buffer);
+
+                return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
 
             case ChunkType::VP8X:
-                // We're implicitly discarding the top chunk here because it
-                // contains no relevant information. The data is a subsection of
-                // `$binary` and using the `$topChunk` means we have to reset
-                // the offset. Preserving the existing offset means we can
-                // output meaningful offsets in error messages if we need to.
                 return $this->decodeExtendedHeader($buffer);
 
             default: {
@@ -71,23 +70,6 @@ final class Decoder
                     throw new RuntimeException("TODO: unexpected chunk {$fourCC} at offset {$originalOffset}");
                 }
         }
-    }
-
-    /**
-     * @see https://datatracker.ietf.org/doc/html/rfc6386
-     */
-    private function decodeLossy(Buffer $buffer): WebP
-    {
-        $vp8 = Vp8::fromBuffer($buffer);
-
-        return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
-    }
-
-    private function decodeLossless(Buffer $buffer): WebP
-    {
-        $vp8l = Vp8l::fromBuffer($buffer);
-
-        return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
     }
 
     private function decodeExtendedHeader(Buffer $buffer): WebP
