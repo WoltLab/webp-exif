@@ -6,15 +6,23 @@ namespace Woltlab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
-use RuntimeException;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
+use Woltlab\WebpExif\Chunk\Chunk;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\Chunk\Xmp;
+use Woltlab\WebpExif\Exception\DataAfterLastChunk;
+use Woltlab\WebpExif\Exception\FileSizeMismatch;
+use Woltlab\WebpExif\Exception\LengthOutOfBounds;
+use Woltlab\WebpExif\Exception\NotEnoughData;
+use Woltlab\WebpExif\Exception\UnexpectedChunk;
+use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
+use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
+use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 
 final class Decoder
 {
@@ -32,33 +40,41 @@ final class Decoder
         // The shortest possible WebP image is a simple VP8L container that
         // contains only the magic byte, a uint32 for the flags and dimensions,
         // and at last a single byte of data. This takes up 26 bytes in total.
-        if ($buffer->size() < 26) {
-            throw new RuntimeException("TODO: too small");
+        $expectedMinimumFileSize = 26;
+        if ($buffer->size() < $expectedMinimumFileSize) {
+            throw new NotEnoughData($expectedMinimumFileSize, $buffer->size());
         }
 
         $riff = $buffer->getString(4);
         $length = $buffer->getUnsignedInt();
         $format = $buffer->getString(4);
         if ($riff !== 'RIFF' || $format !== 'WEBP') {
-            throw new RuntimeException("TODO: not riff/webp");
+            throw new UnrecognizedFileFormat();
         }
 
         // The length in the header is does not include "RIFF" and the length
         // itself. It must therefore be exactly 8 bytes shorter than the total
         // size.
-        if ($length !== $buffer->size() - 8) {
-            throw new RuntimeException("TODO: length mismatch");
+        $actualLength = $buffer->size() - 8;
+        if ($length !== $actualLength) {
+            throw new FileSizeMismatch($length, $actualLength);
         }
 
         $fourCC = $buffer->getString(4);
         switch (ChunkType::fromFourCC($fourCC)) {
             case ChunkType::VP8:
                 $vp8 = Vp8::fromBuffer($buffer);
+                if ($buffer->hasRemaining()) {
+                    throw new DataAfterLastChunk($buffer->remaining());
+                }
 
                 return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
 
             case ChunkType::VP8L:
                 $vp8l = Vp8l::fromBuffer($buffer);
+                if ($buffer->hasRemaining()) {
+                    throw new DataAfterLastChunk($buffer->remaining());
+                }
 
                 return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
 
@@ -67,7 +83,8 @@ final class Decoder
 
             default: {
                     $originalOffset = $buffer->position() - 4;
-                    throw new RuntimeException("TODO: unexpected chunk {$fourCC} at offset {$originalOffset}");
+
+                    throw new UnexpectedChunk($fourCC, $originalOffset);
                 }
         }
     }
@@ -76,9 +93,10 @@ final class Decoder
     {
         // The next 4 bytes represent the length of the VP8X header which must
         // be 10 bytes long.
+        $expectedHeaderLength = 10;
         $length = $buffer->getUnsignedInt();
-        if ($length !== 10) {
-            throw new RuntimeException("TODO: length of the VP8X header must be 10");
+        if ($length !== $expectedHeaderLength) {
+            throw new Vp8xHeaderLengthMismatch($expectedHeaderLength, $length);
         }
 
         // The following 4 bytes contain a single byte containing a bitmask for
@@ -107,25 +125,25 @@ final class Decoder
         }
 
         if ($chunks === []) {
-            throw new RuntimeException("TODO: VP8X contains no data");
+            throw new UnexpectedEndOfFile($buffer->position(), $buffer->remaining());
         }
 
         return WebP::fromChunks($width, $height, $chunks);
     }
 
-    private function decodeChunk(Buffer $buffer): \Woltlab\WebpExif\Chunk\Chunk
+    private function decodeChunk(Buffer $buffer): Chunk
     {
         $remainingBytes = $buffer->remaining();
         if ($remainingBytes < 8) {
-            $offset = $buffer->position();
-            throw new RuntimeException("Unexpected EOF, expected a chunk at offset {$offset} but there are only {$remainingBytes} more bytes");
+            throw new UnexpectedEndOfFile($buffer->position(), $buffer->remaining());
         }
 
         $fourCC = $buffer->getString(4);
         $length = $buffer->getUnsignedInt();
         if ($buffer->remaining() < $length) {
-            $offset = $buffer->position();
-            throw new RuntimeException("TODO: length {$length} for chunk {$fourCC} at offset {$offset} is out of bounds");
+            $originalOffset = $buffer->position() - 4;
+
+            throw new LengthOutOfBounds($length, $originalOffset, $buffer->remaining());
         }
 
         switch (ChunkType::fromFourCC($fourCC)) {
@@ -147,8 +165,11 @@ final class Decoder
             case ChunkType::VP8L:
                 return Vp8l::fromBuffer($buffer);
 
-            case ChunkType::VP8X:
-                throw new RuntimeException("TODO: unexpected VP8X chunk inside of a VP8X chunk");
+            case ChunkType::VP8X: {
+                    $originalOffset = $buffer->position() - 4;
+
+                    throw new UnexpectedChunk("VP8X", $originalOffset);
+                }
 
             case ChunkType::XMP:
                 return Xmp::forBytes($buffer->getString($length));

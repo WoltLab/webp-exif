@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Woltlab\WebpExif\Exception;
+
+use RuntimeException;
+
+/** @internal */
+final class UnexpectedChunk extends RuntimeException
+{
+    public function __construct(string $fourCC, int $offset)
+    {
+        parent::__construct("Found the unexpected chunk `{$fourCC}` at {$offset}");
+    }
+}
