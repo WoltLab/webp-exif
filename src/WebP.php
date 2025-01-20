@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use TypeError;
-use Woltlab\WebpExif\Chunk\Chunk as IChunk;
+use Woltlab\WebpExif\Chunk\Chunk;
 
 final class WebP
 {
     private function __construct(
         public readonly int $width,
         public readonly int $height,
-        /** @var list<Chunk|IChunk> */
+        /** @var list<Chunk> */
         private array $chunks,
     ) {}
 
     /**
-     * @return list<Chunk|IChunk>
+     * @return list<Chunk>
      */
     public function getChunks(): array
     {
@@ -32,11 +32,7 @@ final class WebP
     {
         return \array_reduce(
             $this->chunks,
-            static function (int $length, Chunk|IChunk $chunk) {
-                $chunkLength = $chunk instanceof IChunk ? $chunk->getLength() : $chunk->length;
-
-                return $length + $chunkLength + 8;
-            },
+            static fn (int $length, Chunk $chunk) => $length + $chunk->getLength() + 8,
             0
         );
     }
@@ -47,19 +43,11 @@ final class WebP
     public function debugInfo(): array
     {
         $chunkInfo = \array_map(
-            static function (Chunk|IChunk $chunk) {
-                if ($chunk instanceof IChunk) {
-                    return \sprintf(
-                        "Chunk %s (length %d)",
-                        $chunk->getFourCC(),
-                        $chunk->getLength(),
-                    );
-                }
-
+            static function (Chunk $chunk) {
                 return \sprintf(
                     "Chunk %s (length %d)",
-                    $chunk->fourCC,
-                    $chunk->length,
+                    $chunk->getFourCC(),
+                    $chunk->getLength(),
                 );
             },
             $this->chunks,
@@ -74,12 +62,12 @@ final class WebP
     }
 
     /**
-     * @param list<Chunk|IChunk> $chunks
+     * @param list<Chunk> $chunks
      */
     public static function fromChunks(int $width, int $height, array $chunks): self
     {
         foreach ($chunks as $chunk) {
-            if (!($chunk instanceof Chunk) && !($chunk instanceof IChunk)) {
+            if (!($chunk instanceof Chunk)) {
                 throw new TypeError(
                     \sprintf(
                         "Expected a list of %s, received %s instead",
