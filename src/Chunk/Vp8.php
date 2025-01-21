@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
-use RuntimeException;
 use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
 use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
 
