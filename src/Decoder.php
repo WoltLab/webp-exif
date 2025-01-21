@@ -24,6 +24,7 @@ use Woltlab\WebpExif\Exception\UnexpectedChunk;
 use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
 use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
+use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
 
 final class Decoder
 {
@@ -122,6 +123,30 @@ final class Decoder
 
         if ($chunks === []) {
             throw new UnexpectedEndOfFile($buffer->position(), $buffer->remaining());
+        }
+
+        // The VP8X chunk most contain image data that can come in two flavors:
+        //  1. Still images must contain either a VP8 or VP8L chunk.
+        //  2. Animated images must contain multiple frames.
+        $hasAnimation = \array_find($chunks, static fn(Chunk $chunk) => $chunk instanceof Anim);
+        if ($hasAnimation) {
+            $frames = \array_filter(
+                $chunks,
+                static fn(Chunk $chunk) => $chunk instanceof Anmf
+            );
+
+            if (\count($frames) < 2) {
+                throw new Vp8xMissingImageData(stillImage: false);
+            }
+        } else {
+            $hasBitstreamChunk = \array_find(
+                $chunks,
+                static fn(Chunk $chunk) => ($chunk instanceof Vp8) || ($chunk instanceof Vp8l)
+            );
+
+            if (!$hasBitstreamChunk) {
+                throw new Vp8xMissingImageData(stillImage: true);
+            }
         }
 
         return WebP::fromChunks($width, $height, $chunks);
