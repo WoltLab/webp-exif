@@ -31,6 +31,9 @@ final class DecodeExtendedHeaderTest extends TestCase
         $decoder->fromBinary($this->generateVp8x(chunks: $chunks));
     }
 
+    /**
+     * @param list<string> $chunks
+     */
     private function generateVp8x(
         int $headerLength = 10,
         int $width = 1_337,

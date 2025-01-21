@@ -61,31 +61,26 @@ final class Decoder
         }
 
         $fourCC = $buffer->getString(4);
-        switch (ChunkType::fromFourCC($fourCC)) {
-            case ChunkType::VP8:
-                $vp8 = Vp8::fromBuffer($buffer);
-                if ($buffer->hasRemaining()) {
-                    throw new DataAfterLastChunk($buffer->remaining());
-                }
+        $chunkType = ChunkType::fromFourCC($fourCC);
+        if ($chunkType === ChunkType::VP8) {
+            $vp8 = Vp8::fromBuffer($buffer);
+            if ($buffer->hasRemaining()) {
+                throw new DataAfterLastChunk($buffer->remaining());
+            }
 
-                return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
+            return WebP::fromChunks($vp8->width, $vp8->height, [$vp8]);
+        } else if ($chunkType === ChunkType::VP8L) {
+            $vp8l = Vp8l::fromBuffer($buffer);
+            if ($buffer->hasRemaining()) {
+                throw new DataAfterLastChunk($buffer->remaining());
+            }
 
-            case ChunkType::VP8L:
-                $vp8l = Vp8l::fromBuffer($buffer);
-                if ($buffer->hasRemaining()) {
-                    throw new DataAfterLastChunk($buffer->remaining());
-                }
-
-                return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
-
-            case ChunkType::VP8X:
-                return $this->decodeExtendedHeader($buffer);
-
-            default: {
-                    $originalOffset = $buffer->position() - 4;
-
-                    throw new UnexpectedChunk($fourCC, $originalOffset);
-                }
+            return WebP::fromChunks($vp8l->width, $vp8l->height, [$vp8l]);
+        } else if ($chunkType === ChunkType::VP8X) {
+            return $this->decodeExtendedHeader($buffer);
+        } else {
+            $originalOffset = $buffer->position() - 4;
+            throw new UnexpectedChunk($fourCC, $originalOffset);
         }
     }
 
@@ -146,37 +141,17 @@ final class Decoder
             throw new LengthOutOfBounds($length, $originalOffset, $buffer->remaining());
         }
 
-        switch (ChunkType::fromFourCC($fourCC)) {
-            case ChunkType::ALPH:
-                return Alph::forBytes($buffer->getString($length));
-
-            case ChunkType::ANIM:
-                return Anim::forBytes($buffer->getString($length));
-
-            case ChunkType::EXIF:
-                return Exif::forBytes($buffer->getString($length));
-
-            case ChunkType::ICCP:
-                return Iccp::forBytes($buffer->getString($length));
-
-            case ChunkType::VP8:
-                return Vp8::fromBuffer($buffer);
-
-            case ChunkType::VP8L:
-                return Vp8l::fromBuffer($buffer);
-
-            case ChunkType::VP8X: {
-                    $originalOffset = $buffer->position() - 4;
-
-                    throw new UnexpectedChunk("VP8X", $originalOffset);
-                }
-
-            case ChunkType::XMP:
-                return Xmp::forBytes($buffer->getString($length));
-
-            default:
-                return UnknownChunk::forBytes($fourCC, $buffer->getString($length));
-        }
+        return match (ChunkType::fromFourCC($fourCC)) {
+            ChunkType::ALPH => Alph::forBytes($buffer->getString($length)),
+            ChunkType::ANIM => Anim::forBytes($buffer->getString($length)),
+            ChunkType::EXIF => Exif::forBytes($buffer->getString($length)),
+            ChunkType::ICCP => Iccp::forBytes($buffer->getString($length)),
+            ChunkType::VP8  => Vp8::fromBuffer($buffer),
+            ChunkType::VP8L => Vp8l::fromBuffer($buffer),
+            ChunkType::VP8X => throw new UnexpectedChunk("VP8X", $buffer->position() - 4),
+            ChunkType::XMP  => Xmp::forBytes($buffer->getString($length)),
+            default         => UnknownChunk::forBytes($fourCC, $buffer->getString($length)),
+        };
     }
 
     private function decodeDimension(Buffer $buffer): int
