@@ -9,12 +9,13 @@ use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
 use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 
 final class Vp8lTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void
     {
-        $pseudoValidVp8l = $this->getBufferFor("\x03\x00\x00\x00\x2F\xFF\xFF\xFF\x0F");
+        $pseudoValidVp8l = $this->getBufferFor("\x00\x00\x00\x00\x2F\xFF\xFF\xFF\x0F");
         $chunk = Vp8l::fromBuffer($pseudoValidVp8l);
         $this->assertSame(
             ChunkType::VP8L,
@@ -22,11 +23,19 @@ final class Vp8lTest extends TestCase
         );
     }
 
+    public function testLengthOfPayloadExceedsEof(): void
+    {
+        $this->expectExceptionObject(new LengthOutOfBounds(6, 4, 5));
+
+        $lengthExceedsEof = $this->getBufferFor("\x06\x00\x00\x00\x2F\x00\x00\x00\x00");
+        Vp8l::fromBuffer($lengthExceedsEof);
+    }
+
     public function testMissingMagicByte(): void
     {
         $this->expectException(MissingMagicByte::class);
 
-        $missingMagicByte = $this->getBufferFor("\x03\x00\x00\x00\x00\xFF\xFF\xFF\x0F");
+        $missingMagicByte = $this->getBufferFor("\x00\x00\x00\x00\x00\xFF\xFF\xFF\x0F");
         Vp8l::fromBuffer($missingMagicByte);
     }
 
@@ -34,7 +43,7 @@ final class Vp8lTest extends TestCase
     {
         $this->expectException(UnsupportedVersion::class);
 
-        $missingMagicByte = $this->getBufferFor("\x03\x00\x00\x00\x2F\xFF\xFF\xFF\xFF");
+        $missingMagicByte = $this->getBufferFor("\x00\x00\x00\x00\x2F\xFF\xFF\xFF\xFF");
         Vp8l::fromBuffer($missingMagicByte);
     }
 

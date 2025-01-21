@@ -9,6 +9,7 @@ use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
 use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 
 final class Vp8Test extends TestCase
 {
@@ -20,6 +21,14 @@ final class Vp8Test extends TestCase
             ChunkType::VP8,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
+    }
+
+    public function testLengthOfPayloadExceedsEof(): void
+    {
+        $this->expectExceptionObject(new LengthOutOfBounds(11, 4, 10));
+
+        $lengthExceedsEof = $this->getBufferFor("\x0B\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\xFF\xFF");
+        Vp8::fromBuffer($lengthExceedsEof);
     }
 
     public function testUnexpectedFrame(): void

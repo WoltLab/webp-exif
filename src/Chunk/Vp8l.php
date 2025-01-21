@@ -7,6 +7,7 @@ namespace Woltlab\WebpExif\Chunk;
 use Nelexa\Buffer\Buffer;
 use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
 use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
+use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 
 final class Vp8l extends Chunk
 {
@@ -22,6 +23,9 @@ final class Vp8l extends Chunk
     {
         $length = $buffer->getUnsignedInt();
         $startOfData = $buffer->position();
+        if ($length > $buffer->remaining()) {
+            throw new LengthOutOfBounds($length, $buffer->position(), $buffer->remaining());
+        }
 
         $signature = $buffer->getUnsignedByte();
         if ($signature !== 0x2F) {
