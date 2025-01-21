@@ -38,6 +38,30 @@ final class Vp8Test extends TestCase
         Vp8::fromBuffer($missingMagicByte);
     }
 
+    public function testReportCorrectDimensions(): void
+    {
+        $width = 38;
+        $height = 10_000;
+
+        $buffer = $this->getBufferFor(
+            "\x0a\x00\x00\x00\x00\x00\x00\x9D\x01\x2A"
+                . $this->encodeDimensions($width)
+                . $this->encodeDimensions($height)
+        );
+        $vp8 = Vp8::fromBuffer($buffer);
+
+        $this->assertEquals($width, $vp8->width);
+        $this->assertEquals($height, $vp8->height);
+    }
+
+    private function encodeDimensions(int $dimension): string
+    {
+        // Technically we must encode this as a 14-bit integer but since we
+        // don't validate the scale in the first 2 bits, we can simply be lazy
+        // and just use an uint16 instead.
+        return \pack('v', $dimension);
+    }
+
     private function getBufferFor(string $bytes): Buffer
     {
         $buffer = new StringBuffer($bytes);

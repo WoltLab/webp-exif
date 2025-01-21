@@ -38,6 +38,32 @@ final class Vp8lTest extends TestCase
         Vp8l::fromBuffer($missingMagicByte);
     }
 
+    public function testReportCorrectDimensions(): void
+    {
+        $width = 38;
+        $height = 10_000;
+
+        $buffer = $this->getBufferFor(
+            "\x00\x00\x00\x00\x2F" . $this->encodeDimensions($width, $height)
+        );
+        $vp8l = Vp8l::fromBuffer($buffer);
+
+        $this->assertEquals($width, $vp8l->width);
+        $this->assertEquals($height, $vp8l->height);
+    }
+
+    private function encodeDimensions(int $width, int $height): string
+    {
+        $uint32 = 0;
+
+        // The first 14 bits are the width - 1.
+        $uint32 |= (($width - 1) & 0x3FFF);
+        // The next 14 bits are the height - 1.
+        $uint32 |= (($height - 1) & 0x3FFF) << 14;
+
+        return \pack('V', $uint32);
+    }
+
     private function getBufferFor(string $bytes): Buffer
     {
         $buffer = new StringBuffer($bytes);
