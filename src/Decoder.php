@@ -8,6 +8,7 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
+use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Chunk;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
@@ -144,6 +145,7 @@ final class Decoder
         return match (ChunkType::fromFourCC($fourCC)) {
             ChunkType::ALPH => Alph::forBytes($buffer->getString($length)),
             ChunkType::ANIM => Anim::forBytes($buffer->getString($length)),
+            ChunkType::ANMF => Anmf::forBytes($buffer->getString($length)),
             ChunkType::EXIF => Exif::forBytes($buffer->getString($length)),
             ChunkType::ICCP => Iccp::forBytes($buffer->getString($length)),
             ChunkType::VP8  => Vp8::fromBuffer($buffer),

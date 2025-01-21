@@ -8,6 +8,7 @@ enum ChunkType
 {
     case ALPH;
     case ANIM;
+    case ANMF;
     case EXIF;
     case ICCP;
     case VP8;
@@ -21,6 +22,7 @@ enum ChunkType
         return match ($fourCC) {
             "ALPH" => self::ALPH,
             "ANIM" => self::ANIM,
+            "ANMF" => self::ANMF,
             "EXIF" => self::EXIF,
             "ICCP" => self::ICCP,
             "VP8 " => self::VP8,
