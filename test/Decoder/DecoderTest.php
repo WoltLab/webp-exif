@@ -8,6 +8,7 @@ use Woltlab\WebpExif\Exception\DataAfterLastChunk;
 use Woltlab\WebpExif\Exception\FileSizeMismatch;
 use Woltlab\WebpExif\Exception\NotEnoughData;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
+use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
 
 final class DecoderTest extends TestCase
@@ -38,7 +39,7 @@ final class DecoderTest extends TestCase
 
     public function testDataAfterSimpleLossy(): void
     {
-        $this->expectException(DataAfterLastChunk::class);
+        $this->expectExceptionObject(new UnexpectedEndOfFile(0x1a, 4));
 
         $decoder = new Decoder();
         $decoder->fromBinary("RIFF\x16\x00\x00\x00WEBPVP8 \x06\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\x00\x00");
@@ -46,7 +47,7 @@ final class DecoderTest extends TestCase
 
     public function testDataAfterSimpleLossless(): void
     {
-        $this->expectException(DataAfterLastChunk::class);
+        $this->expectExceptionObject(new UnexpectedEndOfFile(0x1a, 2));
 
         $decoder = new Decoder();
         $decoder->fromBinary("RIFF\x14\x00\x00\x00WEBPVP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B\x00\x00");

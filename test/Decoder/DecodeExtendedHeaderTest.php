@@ -6,19 +6,21 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
 use Woltlab\WebpExif\Decoder;
+use Woltlab\WebpExif\Exception\ExtraVp8xChunk;
 use Woltlab\WebpExif\Exception\LengthOutOfBounds;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
 use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
+use Woltlab\WebpExif\Exception\Vp8xWithoutChunks;
 
 final class DecodeExtendedHeaderTest extends TestCase
 {
     public function testRejectNestedVp8x(): void
     {
-        $this->expectExceptionObject(new UnexpectedChunk("VP8X", 34));
+        $this->expectException(ExtraVp8xChunk::class);
 
         $decoder = new Decoder();
         $chunks = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
             "VP8X\x0A\x00\x00\x00" . str_repeat("\x00", 10),
         ];
         $decoder->fromBinary($this->generateVp8x(chunks: $chunks));
@@ -26,7 +28,7 @@ final class DecodeExtendedHeaderTest extends TestCase
 
     public function testRejectEmptyVp8x(): void
     {
-        $this->expectExceptionObject(new UnexpectedEndOfFile(30, 0));
+        $this->expectExceptionObject(new Vp8xWithoutChunks());
 
         $decoder = new Decoder();
         $decoder->fromBinary($this->generateVp8x());

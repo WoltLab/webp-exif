@@ -11,6 +11,8 @@ final class UnexpectedEndOfFile extends RuntimeException
 {
     public function __construct(int $offset, int $remainingBytes)
     {
-        parent::__construct("Expected more data after offset {$offset} ({$remainingBytes} bytes remaining)");
+        $offset = \dechex($offset);
+
+        parent::__construct("Expected more data after offset 0x{$offset} ({$remainingBytes} bytes remaining)");
     }
 }

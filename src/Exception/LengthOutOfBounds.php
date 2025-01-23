@@ -11,6 +11,8 @@ final class LengthOutOfBounds extends OutOfBoundsException
 {
     public function __construct(int $length, int $offset, int $remainingBytes)
     {
-        parent::__construct("Found the length {$length} at offset {$offset} but there are only {$remainingBytes} bytes remaining");
+        $offset = \dechex($offset);
+
+        parent::__construct("Found the length {$length} at offset 0x{$offset} but there are only {$remainingBytes} bytes remaining");
     }
 }
