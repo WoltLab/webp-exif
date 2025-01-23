@@ -15,6 +15,7 @@ use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
+use Woltlab\WebpExif\Chunk\Vp8x;
 use Woltlab\WebpExif\Chunk\Xmp;
 use Woltlab\WebpExif\Exception\DataAfterLastChunk;
 use Woltlab\WebpExif\Exception\FileSizeMismatch;
@@ -88,25 +89,7 @@ final class Decoder
 
     private function decodeExtendedHeader(Buffer $buffer): WebP
     {
-        // The next 4 bytes represent the length of the VP8X header which must
-        // be 10 bytes long.
-        $expectedHeaderLength = 10;
-        $length = $buffer->getUnsignedInt();
-        if ($length !== $expectedHeaderLength) {
-            throw new Vp8xHeaderLengthMismatch($expectedHeaderLength, $length);
-        }
-
-        // The following 4 bytes contain a single byte containing a bitmask for
-        // the contained features (which we can safely ignore at this point),
-        // followed by 24 reserved bits.
-        $buffer->skip(4);
-
-        // The width of the canvas is represented as a uint24LE but minus one,
-        // therefore we have to add 1 when decoding the value.
-        $width = $this->decodeDimension($buffer);
-
-        // The height follows the same rules as the width.
-        $height = $this->decodeDimension($buffer);
+        $vp8x = Vp8x::fromBuffer($buffer);
 
         // Decode the remaining chunks.
         $chunks = [];
@@ -149,7 +132,7 @@ final class Decoder
             }
         }
 
-        return WebP::fromChunks($width, $height, $chunks);
+        return WebP::fromChunks($vp8x->width, $vp8x->height, $chunks);
     }
 
     private function decodeChunk(Buffer $buffer): Chunk
@@ -179,14 +162,5 @@ final class Decoder
             ChunkType::XMP  => Xmp::forBytes($buffer->getString($length)),
             default         => UnknownChunk::forBytes($fourCC, $buffer->getString($length)),
         };
-    }
-
-    private function decodeDimension(Buffer $buffer): int
-    {
-        $a = $buffer->getUnsignedByte();
-        $b = $buffer->getUnsignedByte();
-        $c = $buffer->getUnsignedByte();
-
-        return $a + ($b << 8) + ($c << 16) + 1;
     }
 }
