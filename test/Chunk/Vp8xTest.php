@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
 use Woltlab\WebpExif\Chunk\Vp8x;
 use Woltlab\WebpExif\ChunkType;
 use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
@@ -29,16 +30,63 @@ final class Vp8xTest extends TestCase
         Vp8x::fromBuffer($pseudoValidVp8x);
     }
 
-    private function encodeDimensions(int $width, int $height): string
+    public function testExcessiveWidth(): void
     {
-        $uint32 = 0;
+        $width = 16_777_215; // max uint24
+        $height = 1200;
 
-        // The first 14 bits are the width - 1.
-        $uint32 |= (($width - 1) & 0x3FFF);
-        // The next 14 bits are the height - 1.
-        $uint32 |= (($height - 1) & 0x3FFF) << 14;
+        $this->expectExceptionObject(new DimensionsExceedInt32($width, $height));
 
-        return \pack('V', $uint32);
+        Vp8x::fromBuffer($this->generateVp8x(width: $width, height: $height));
+    }
+
+    public function testExcessiveHeight(): void
+    {
+        $width = 1200;
+        $height = 16_777_215; // max uint24
+
+        $this->expectExceptionObject(new DimensionsExceedInt32($width, $height));
+
+        Vp8x::fromBuffer($this->generateVp8x(width: $width, height: $height));
+    }
+
+    public function testDecodeDimensionsMatchRawValues(): void
+    {
+        $width = 33;
+        $height = 66;
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(width: $width, height: $height));
+
+        $this->assertEquals($vp8x->width, $width);
+        $this->assertEquals($vp8x->height, $height);
+    }
+
+    private function generateVp8x(
+        int $headerLength = 10,
+        int $width = 1_234,
+        int $height = 2_345,
+    ): Buffer {
+        $buffer = new StringBuffer();
+        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
+
+        $buffer->insertInt($headerLength);
+
+        // We don't care for the flags.
+        $buffer->insertInt(0);
+
+        // Encode the width and height as a 3 byte value each.
+        $width = ($width - 1) & 0x00FFFFFF;
+        $buffer->insertByte(($width >>  0) & 0xFF);
+        $buffer->insertByte(($width >>  8) & 0xFF);
+        $buffer->insertByte(($width >> 16) & 0xFF);
+
+        $height = ($height - 1) & 0x00FFFFFF;
+        $buffer->insertByte(($height >>  0) & 0xFF);
+        $buffer->insertByte(($height >>  8) & 0xFF);
+        $buffer->insertByte(($height >> 16) & 0xFF);
+
+        return $this->getBufferFor(
+            $buffer->toString()
+        );
     }
 
     private function getBufferFor(string $bytes): Buffer

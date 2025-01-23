@@ -9,20 +9,10 @@ use Woltlab\WebpExif\Decoder;
 use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
 use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
-use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
 
 final class DecodeExtendedHeaderTest extends TestCase
 {
-    public function testHeaderLengthMismatch(): void
-    {
-        $headerLength = 20;
-        $this->expectExceptionObject(new Vp8xHeaderLengthMismatch(10, $headerLength));
-
-        $decoder = new Decoder();
-        $decoder->fromBinary($this->generateVp8x(headerLength: $headerLength));
-    }
-
     public function testRejectNestedVp8x(): void
     {
         $this->expectExceptionObject(new UnexpectedChunk("VP8X", 34));
@@ -90,9 +80,8 @@ final class DecodeExtendedHeaderTest extends TestCase
      * @param list<string> $chunks
      */
     private function generateVp8x(
-        int $headerLength = 10,
-        int $width = 1_337,
-        int $height = 1_337,
+        int $width = 1_234,
+        int $height = 2_345,
         array $chunks = []
     ): string {
         $buffer = new StringBuffer();
@@ -105,20 +94,20 @@ final class DecodeExtendedHeaderTest extends TestCase
 
         $buffer->insertString("WEBP");
         $buffer->insertString("VP8X");
-        $buffer->insertInt($headerLength);
+        $buffer->insertInt(10);
         // We don't care for the flags.
         $buffer->insertInt(0);
 
         // Encode the width and height as a 3 byte value each.
         $width = ($width - 1) & 0x00FFFFFF;
-        $buffer->insertByte($width >> 16);
-        $buffer->insertByte(($width >> 8) & 0x00FF);
-        $buffer->insertByte($width & 0xFF);
+        $buffer->insertByte(($width >>  0) & 0xFF);
+        $buffer->insertByte(($width >>  8) & 0xFF);
+        $buffer->insertByte(($width >> 16) & 0xFF);
 
         $height = ($height - 1) & 0x00FFFFFF;
-        $buffer->insertByte($height >> 16);
-        $buffer->insertByte(($height >> 8) & 0x00FF);
-        $buffer->insertByte($height & 0xFF);
+        $buffer->insertByte(($height >>  0) & 0xFF);
+        $buffer->insertByte(($height >>  8) & 0xFF);
+        $buffer->insertByte(($height >> 16) & 0xFF);
 
         foreach ($chunks as $chunk) {
             $paddingByte = (strlen($chunk) % 2 === 1) ? "\x00" : "";
