@@ -12,10 +12,12 @@ final class Vp8x extends Chunk
 {
     private function __construct(
         public readonly int $width,
-        public readonly int $height
+        public readonly int $height,
+        int $offset,
     ) {
         parent::__construct(
             "VP8X",
+            $offset,
             // VP8X only contains the header because the actual payload are the
             // chunks that follow afterwards.
             ""
@@ -31,6 +33,8 @@ final class Vp8x extends Chunk
         if ($length !== $expectedHeaderLength) {
             throw new Vp8xHeaderLengthMismatch($expectedHeaderLength, $length);
         }
+
+        $startOfData = $buffer->position();
 
         // The following 4 bytes contain a single byte containing a bitmask for
         // the contained features (which we can safely ignore at this point),
@@ -55,7 +59,7 @@ final class Vp8x extends Chunk
             throw new DimensionsExceedInt32($width, $height);
         }
 
-        return new Vp8x($width, $height);
+        return new Vp8x($width, $height, $startOfData - 8);
     }
 
     private static function decodeDimension(Buffer $buffer): int

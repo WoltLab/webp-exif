@@ -6,13 +6,13 @@ namespace Woltlab\WebpExif\Chunk;
 
 final class Anim extends Chunk
 {
-    private function __construct(string $data)
+    private function __construct(int $offset, string $data)
     {
-        parent::__construct("ANIM", $data);
+        parent::__construct("ANIM", $offset, $data);
     }
 
-    public static function forBytes(string $bytes): self
+    public static function forBytes(int $offset, string $bytes): self
     {
-        return new Anim($bytes);
+        return new Anim($offset, $bytes);
     }
 }

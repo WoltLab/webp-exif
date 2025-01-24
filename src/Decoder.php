@@ -75,6 +75,7 @@ final class Decoder
             throw new UnexpectedEndOfFile($buffer->position(), $buffer->remaining());
         }
 
+        $chunkPosition = $buffer->position();
         $fourCC = $buffer->getString(4);
         $originalOffset = $buffer->position();
         $length = $buffer->getUnsignedInt();
@@ -83,13 +84,13 @@ final class Decoder
         }
 
         $chunk = match (ChunkType::fromFourCC($fourCC)) {
-            ChunkType::ALPH => Alph::forBytes($buffer->getString($length)),
-            ChunkType::ANIM => Anim::forBytes($buffer->getString($length)),
-            ChunkType::ANMF => Anmf::forBytes($buffer->getString($length)),
-            ChunkType::EXIF => Exif::forBytes($buffer->getString($length)),
-            ChunkType::ICCP => Iccp::forBytes($buffer->getString($length)),
-            ChunkType::XMP  => Xmp::forBytes($buffer->getString($length)),
-            default         => UnknownChunk::forBytes($fourCC, $buffer->getString($length)),
+            ChunkType::ALPH => Alph::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::ANIM => Anim::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::ANMF => Anmf::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::EXIF => Exif::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::ICCP => Iccp::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::XMP  => Xmp::forBytes($chunkPosition, $buffer->getString($length)),
+            default         => UnknownChunk::forBytes($fourCC, $chunkPosition, $buffer->getString($length)),
 
             // VP8, VP8L and VP8X are a bit different because these need to be
             // able to evaluate the length of the chunk themselves for various

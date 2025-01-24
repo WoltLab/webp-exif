@@ -11,15 +11,24 @@ final class DecodeAssetTest extends TestCase
     #[DataProvider('pathnameProvider')]
     public function testDecodeAsset(string $pathname): void
     {
-        $decoder = new Decoder();
-        $webp = $decoder->fromBinary(file_get_contents($pathname));
+        $binary = file_get_contents($pathname);
+        assert($binary !== false);
 
-        $this->assertIsObject($webp);
+        $decoder = new Decoder();
+        $webp = $decoder->fromBinary($binary);
+
+        // Placeholder assertion that makes both phpunit and phpstan happy
+        // because we test those files to validate that the decoder works.
+        // see https://github.com/sebastianbergmann/phpunit/issues/3016
+        $this->assertTrue($webp->getByteLength() > 0);
     }
 
     public static function pathnameProvider(): Generator
     {
-        foreach (glob("./test/TestAsset/*.webp") as $file) {
+        $files = glob("./test/TestAsset/*.webp");
+        assert($files !== false);
+
+        foreach ($files as $file) {
             yield [$file];
         }
     }

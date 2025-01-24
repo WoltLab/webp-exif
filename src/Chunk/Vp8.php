@@ -14,9 +14,10 @@ final class Vp8 extends Chunk
     private function __construct(
         public readonly int $width,
         public readonly int $height,
+        int $offset,
         string $data,
     ) {
-        parent::__construct("VP8 ", $data);
+        parent::__construct("VP8 ", $offset, $data);
     }
 
     public static function fromBuffer(Buffer $buffer): self
@@ -53,6 +54,7 @@ final class Vp8 extends Chunk
         return new Vp8(
             $width,
             $height,
+            $startOfData - 8,
             $buffer->setPosition($startOfData)->getString($length)
         );
     }

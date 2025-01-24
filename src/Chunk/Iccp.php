@@ -6,13 +6,13 @@ namespace Woltlab\WebpExif\Chunk;
 
 final class Iccp extends Chunk
 {
-    private function __construct(string $data)
+    private function __construct(int $offset, string $data)
     {
-        parent::__construct("ICCP", $data);
+        parent::__construct("ICCP", $offset, $data);
     }
 
-    public static function forBytes(string $bytes): self
+    public static function forBytes(int $offset, string $bytes): self
     {
-        return new Iccp($bytes);
+        return new Iccp($offset, $bytes);
     }
 }

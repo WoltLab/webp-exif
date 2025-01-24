@@ -6,13 +6,13 @@ namespace Woltlab\WebpExif\Chunk;
 
 final class Exif extends Chunk
 {
-    private function __construct(string $data)
+    private function __construct(int $offset, string $data)
     {
-        parent::__construct("EXIF", $data);
+        parent::__construct("EXIF", $offset, $data);
     }
 
-    public static function forBytes(string $bytes): self
+    public static function forBytes(int $offset, string $bytes): self
     {
-        return new Exif($bytes);
+        return new Exif($offset, $bytes);
     }
 }

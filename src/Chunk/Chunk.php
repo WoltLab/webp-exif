@@ -8,6 +8,7 @@ abstract class Chunk
 {
     protected function __construct(
         private readonly string $fourCC,
+        private readonly int $offset,
         private readonly string $data,
     ) {}
 
@@ -19,5 +20,9 @@ abstract class Chunk
     public function getLength(): int
     {
         return \strlen($this->data);
+    }
+
+    public function getOffset(): int {
+        return $this->offset;
     }
 }

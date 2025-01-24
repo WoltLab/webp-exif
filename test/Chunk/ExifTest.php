@@ -10,10 +10,24 @@ final class ExifTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void
     {
-        $chunk = Exif::forBytes("");
+        $chunk = Exif::forBytes(0, "");
         $this->assertSame(
             ChunkType::EXIF,
             ChunkType::fromFourCC($chunk->getFourCC()),
+        );
+    }
+
+    public function testReportsCorrectOffset(): void
+    {
+        // This is a bogus offset that cannot naturally occur because all chunks
+        // in a RIFF contain must be of even length. We do not validate the
+        // offset so this ensures we're not dealing with hardcoded values.
+        $offset = 7;
+
+        $chunk = Exif::forBytes($offset, "");
+        $this->assertSame(
+            $offset,
+            $chunk->getOffset(),
         );
     }
 }
