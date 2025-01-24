@@ -82,7 +82,7 @@ final class Decoder
             throw new LengthOutOfBounds($length, $originalOffset, $buffer->remaining());
         }
 
-        return match (ChunkType::fromFourCC($fourCC)) {
+        $chunk = match (ChunkType::fromFourCC($fourCC)) {
             ChunkType::ALPH => Alph::forBytes($buffer->getString($length)),
             ChunkType::ANIM => Anim::forBytes($buffer->getString($length)),
             ChunkType::ANMF => Anmf::forBytes($buffer->getString($length)),
@@ -98,5 +98,13 @@ final class Decoder
             ChunkType::VP8L => Vp8l::fromBuffer($buffer->setPosition($originalOffset)),
             ChunkType::VP8X => Vp8x::fromBuffer($buffer->setPosition($originalOffset)),
         };
+
+        // The length of every chunk in a RIFF container must be of an even
+        // length. Uneven chunks must be padded by a single 0x00 at the end.
+        if ($length % 2 === 1) {
+            $buffer->setPosition($buffer->position() + 1);
+        }
+
+        return $chunk;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Woltlab\WebpExif\Decoder;
-use Woltlab\WebpExif\Exception\DataAfterLastChunk;
 use Woltlab\WebpExif\Exception\FileSizeMismatch;
 use Woltlab\WebpExif\Exception\NotEnoughData;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
