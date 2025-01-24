@@ -1,0 +1,25 @@
+{
+  "_SOURCE": "https://github.com/image-rs/image-webp/blob/9310d585ab4f6a361326af07fa90201dda963c5f/tests/images/gallery2/1_webp_a.webp",
+  "_LICENSE": "MIT",
+  "chunks": [
+    {
+      "fourCC": "VP8X",
+      "offset": 12,
+      "length": 18,
+      "width": 400,
+      "height": 301
+    },
+    {
+      "fourCC": "ALPH",
+      "offset": 30,
+      "length": 3782
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 3812,
+      "length": 14322,
+      "width": 400,
+      "height": 301
+    }
+  ]
+}

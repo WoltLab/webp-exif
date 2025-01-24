@@ -57,8 +57,10 @@ final class WebP
         $chunkInfo = \array_map(
             static function (Chunk $chunk) {
                 return \sprintf(
-                    "Chunk %s (length %d)",
+                    "Chunk %s (offset %d [0x%X], length %d)",
                     $chunk->getFourCC(),
+                    $chunk->getOffset(),
+                    $chunk->getOffset(),
                     $chunk->getLength(),
                 );
             },
