@@ -1,0 +1,54 @@
+{
+  "_SOURCE": "https://github.com/image-rs/image-webp/blob/9310d585ab4f6a361326af07fa90201dda963c5f/tests/images/animated/random_lossless.webp",
+  "_LICENSE": "MIT",
+  "chunks": [
+    {
+      "fourCC": "VP8X",
+      "offset": 12,
+      "length": 18,
+      "width": 64,
+      "height": 63
+    },
+    {
+      "fourCC": "ANIM",
+      "offset": 30,
+      "length": 14
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 44,
+      "length": 12236
+    },
+    {
+      "fourCC": "VP8L",
+      "offset": 68,
+      "length": 12212,
+      "width": 64,
+      "height": 63
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 12280,
+      "length": 12232
+    },
+    {
+      "fourCC": "VP8L",
+      "offset": 12304,
+      "length": 12208,
+      "width": 64,
+      "height": 63
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 24512,
+      "length": 12230
+    },
+    {
+      "fourCC": "VP8L",
+      "offset": 24536,
+      "length": 12206,
+      "width": 64,
+      "height": 63
+    }
+  ]
+}

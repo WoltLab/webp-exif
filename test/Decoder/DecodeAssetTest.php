@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Decoder;
 
 final class DecodeAssetTest extends TestCase
@@ -40,18 +41,27 @@ final class DecodeAssetTest extends TestCase
             array_shift($expectedChunks);
         }
 
-        $chunks = $webp->getChunks();
+        $chunks = [];
+        foreach ($webp->getChunks() as $chunk) {
+            $chunks[] = $chunk;
+            if ($chunk instanceof Anmf) {
+                foreach ($chunk->getDataChunks() as $dataChunk) {
+                    $chunks[] = $dataChunk;
+                }
+            }
+        }
+
         for ($i = 0, $length = count($chunks); $i < $length; $i++) {
             $expected = $expectedChunks[$i];
             $chunk = $chunks[$i];
 
             $debugInfo = sprintf(
-                "Testing chunk %s at offset %d (0x%s) to match the chunk at offset %d (0x%s)",
+                "Testing chunk %s at offset %d (0x%X) to match the chunk at offset %d (0x%X)",
                 $i,
                 $expected['offset'],
-                dechex($expected['offset']),
+                $expected['offset'],
                 $chunk->getOffset(),
-                dechex($chunk->getOffset()),
+                $chunk->getOffset(),
             );
 
             // The chunk length reported by `webpinfo` differs in that it counts
@@ -59,6 +69,13 @@ final class DecodeAssetTest extends TestCase
             // would be reported as 17 + 1 (padding) + 8 = 26
             $paddingByte = $chunk->getLength() % 2;
             $effectiveLength = $chunk->getLength() + $paddingByte + 8;
+
+            // The position of an animation frame is reported slightly different
+            // in `webpinfo`.
+            $effectiveOffset = $chunk->getOffset();
+            if ($chunk instanceof Anmf) {
+                $effectiveOffset -= 4;
+            }
 
             $this->assertEquals(
                 [
@@ -68,7 +85,7 @@ final class DecodeAssetTest extends TestCase
                 ],
                 [
                     $chunk->getFourCC(),
-                    $chunk->getOffset(),
+                    $effectiveOffset,
                     $effectiveLength,
                 ],
                 $debugInfo,

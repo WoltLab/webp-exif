@@ -11,6 +11,7 @@ final class UnexpectedChunk extends RuntimeException
 {
     public function __construct(string $fourCC, int $offset)
     {
-        parent::__construct("Found the unexpected chunk `{$fourCC}` at {$offset}");
+        $offset = \dechex($offset);
+        parent::__construct("Found the unexpected chunk `{$fourCC}` at offset 0x{$offset}");
     }
 }

@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
+use Nelexa\Buffer\BufferException;
 use Nelexa\Buffer\StringBuffer;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Chunk;
+use Woltlab\WebpExif\Chunk\Exception\UnknownChunkWithKnownFourCC;
+use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
+use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
+use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
+use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
@@ -22,6 +28,7 @@ use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 use Woltlab\WebpExif\Exception\NotEnoughData;
 use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
+use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 
 final class Decoder
 {
@@ -68,7 +75,10 @@ final class Decoder
         return WebP::fromChunks($chunks);
     }
 
-    private function decodeChunk(Buffer $buffer): Chunk
+    /**
+     * @internal
+     */
+    public function decodeChunk(Buffer $buffer): Chunk
     {
         $remainingBytes = $buffer->remaining();
         if ($remainingBytes < 8) {
@@ -86,7 +96,7 @@ final class Decoder
         $chunk = match (ChunkType::fromFourCC($fourCC)) {
             ChunkType::ALPH => Alph::forBytes($chunkPosition, $buffer->getString($length)),
             ChunkType::ANIM => Anim::forBytes($chunkPosition, $buffer->getString($length)),
-            ChunkType::ANMF => Anmf::forBytes($chunkPosition, $buffer->getString($length)),
+            ChunkType::ANMF => Anmf::fromBuffer($buffer->setPosition($originalOffset)),
             ChunkType::EXIF => Exif::forBytes($chunkPosition, $buffer->getString($length)),
             ChunkType::ICCP => Iccp::forBytes($chunkPosition, $buffer->getString($length)),
             ChunkType::XMP  => Xmp::forBytes($chunkPosition, $buffer->getString($length)),
