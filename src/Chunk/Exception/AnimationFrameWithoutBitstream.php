@@ -7,11 +7,11 @@ namespace Woltlab\WebpExif\Chunk\Exception;
 use RuntimeException;
 
 /** @internal */
-final class EmptyAnimationFrame extends RuntimeException
+final class AnimationFrameWithoutBitstream extends RuntimeException
 {
     public function __construct(int $offset)
     {
         $offset = \dechex($offset);
-        parent::__construct("The ANMF frame at offset 0x{$offset} contains no chunks");
+        parent::__construct("The ANMF frame at offset 0x{$offset} does not contain a bitstream chunk");
     }
 }

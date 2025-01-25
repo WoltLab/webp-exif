@@ -6,13 +6,19 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
 use Woltlab\WebpExif\Chunk\Anmf;
+use Woltlab\WebpExif\Chunk\Exception\AnimationFrameWithoutBitstream;
+use Woltlab\WebpExif\Chunk\Exception\EmptyAnimationFrame;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\UnexpectedChunk;
 
 final class AnmfTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void
     {
-        $chunk = Anmf::fromBuffer($this->generateAnmf());
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+        $chunk = Anmf::fromBuffer($this->generateAnmf($frameData));
         $this->assertSame(
             ChunkType::ANMF,
             ChunkType::fromFourCC($chunk->getFourCC()),
@@ -26,7 +32,10 @@ final class AnmfTest extends TestCase
         // offset so this ensures we're not dealing with hardcoded values.
         $offset = 7;
 
-        $buffer = $this->generateAnmf();
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+        $buffer = $this->generateAnmf($frameData);
         $buffer->setPosition(0);
         $buffer->insertString(str_repeat("\x00", $offset));
 
@@ -35,6 +44,122 @@ final class AnmfTest extends TestCase
             $offset,
             $chunk->getOffset(),
         );
+    }
+
+    public function testAlphPermittedAtFirstPosition(): void
+    {
+        $frameData = [
+            "ALPH\x00\x00\x00\x00",
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        $chunk = Anmf::fromBuffer($buffer);
+
+        $this->assertEquals(
+            count($chunk->getDataChunks()),
+            2
+        );
+    }
+
+    public function testPermitsUnknownChunksAtEnd(): void
+    {
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+            "####\x00\x00\x00\x00",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        $chunk = Anmf::fromBuffer($buffer);
+
+        $this->assertEquals(
+            count($chunk->getDataChunks()),
+            2
+        );
+    }
+
+    public function testReportsCorrectDataChunks(): void
+    {
+        $frameData = [
+            "ALPH\x00\x00\x00\x00",
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+            "####\x00\x00\x00\x00",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        $chunk = Anmf::fromBuffer($buffer);
+        $dataChunks = $chunk->getDataChunks();
+
+        $this->assertEquals(count($dataChunks), 3);
+        $this->assertEquals([
+            $dataChunks[0]->getFourCC(),
+            $dataChunks[0]->getOffset(),
+        ], [
+            "ALPH",
+            20
+        ]);
+        $this->assertEquals([
+            $dataChunks[1]->getFourCC(),
+            $dataChunks[1]->getOffset()
+        ], [
+            "VP8L",
+            28
+        ]);
+        $this->assertEquals([
+            $dataChunks[2]->getFourCC(),
+            $dataChunks[2]->getOffset(),
+        ], [
+            "####",
+            42,
+        ]);
+    }
+
+    public function testRejectsKnownChunkAfterImageData(): void
+    {
+        $this->expectExceptionObject(new UnexpectedChunk("ALPH", 0x22));
+
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+            "ALPH\x00\x00\x00\x00",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        Anmf::fromBuffer($buffer);
+    }
+
+    public function testRejectsUnknownChunkBeforeImageData(): void
+    {
+        $this->expectExceptionObject(new AnimationFrameWithoutBitstream(0));
+
+        $frameData = [
+            "####\x00\x00\x00\x00",
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        Anmf::fromBuffer($buffer);
+    }
+
+    public function testRejectsMissingBitstream(): void
+    {
+        $this->expectExceptionObject(new AnimationFrameWithoutBitstream(0));
+
+        $frameData = [
+            "ALPH\x00\x00\x00\x00",
+        ];
+        $buffer = $this->generateAnmf($frameData);
+
+        Anmf::fromBuffer($buffer);
+    }
+
+    public function testRejectsEmptyFrame(): void
+    {
+        $this->expectExceptionObject(new EmptyAnimationFrame(0));
+
+        $frameData = [];
+        $buffer = $this->generateAnmf($frameData);
+
+        Anmf::fromBuffer($buffer);
     }
 
     /**

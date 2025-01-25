@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
-use Nelexa\Buffer\StringBuffer;
 use Override;
+use Woltlab\WebpExif\Chunk\Exception\AnimationFrameWithoutBitstream;
+use Woltlab\WebpExif\Chunk\Exception\EmptyAnimationFrame;
 use Woltlab\WebpExif\Decoder;
 use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
@@ -63,49 +64,44 @@ final class Anmf extends Chunk
         $decoder = new Decoder();
         while ($buffer->position() < $offset + 4 + $length) {
             $chunks[] = $decoder->decodeChunk($buffer);
-            if ($chunk instanceof Alph) {
-                // An ALPH chunk can only appear at the start of the frame data.
-                if ($chunks !== []) {
-                    throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
-                }
+        }
 
-                $chunks[] = $chunk;
-            } else if ($chunk instanceof Vp8 || $chunk instanceof Vp8l) {
-                switch (\count($chunks)) {
-                    case 0:
-                        $chunks[] = $chunk;
-                        break;
+        self::validateChunks($offset, $chunks);
 
-                    case 1:
-                        // A bitstream chunk can only appear at the first
-                        // position or after an ALPH chunk.
-                        if (!($chunk[0] instanceof Alph)) {
-                            throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
-                        }
+        return new Anmf($offset, $frameHeader, $chunks);
+    }
 
-                        $chunks[] = $chunk;
-                        break;
+    /**
+     * @param list<Chunk> $chunks
+     */
+    private static function validateChunks(int $offset, array $chunks): void
+    {
+        if ($chunks === []) {
+            throw new EmptyAnimationFrame($offset);
+        }
 
-                    default:
-                        throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
-                }
-            } else if ($chunk instanceof UnknownChunk) {
-                if ($chunks === []) {
-                    // An unknown chunk cannot appear at the first position.
-                    throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
-                }
+        // An ALPH chunk can only appear at the start of the frame data.
+        if ($chunks[0] instanceof Alph) {
+            \array_shift($chunks);
 
-                $lastChunk = $chunks[\count($chunks) - 1];
-                if (!($lastChunk instanceof Vp8 || $lastChunk instanceof Vp8l)) {
-                    throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
-                }
-
-                $chunks[] = $chunk;
-            } else {
-                throw new UnexpectedChunk($chunk->getFourCC(), $chunk->getOffset());
+            if ($chunks === []) {
+                throw new AnimationFrameWithoutBitstream($offset);
             }
         }
 
-        return new Anmf($offset, $frameHeader, $chunks);
+        // A bitstream chunk can only appear at the first position or after an
+        // ALPH chunk.
+        if ($chunks[0] instanceof Vp8 || $chunks[0] instanceof Vp8l) {
+            \array_shift($chunks);
+        } else {
+            throw new AnimationFrameWithoutBitstream($offset);
+        }
+
+        // After the bitstream chunk there may be an infinite number of unknown
+        // chunks, but no known ones.
+        $disallowedChunk = \array_find($chunks, static fn($chunk) => !($chunk instanceof UnknownChunk));
+        if ($disallowedChunk instanceof Chunk) {
+            throw new UnexpectedChunk($disallowedChunk->getFourCC(), $disallowedChunk->getOffset());
+        }
     }
 }
