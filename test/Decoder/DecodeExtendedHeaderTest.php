@@ -86,6 +86,12 @@ final class DecodeExtendedHeaderTest extends TestCase
         int $height = 2_345,
         array $chunks = []
     ): string {
+        $iccProfile = \array_find($chunks, static fn($chunk) => \str_starts_with($chunk, "ICCP")) !== null;
+        $alpha      = \array_find($chunks, static fn($chunk) => \str_starts_with($chunk, "ALPH")) !== null;
+        $exif       = \array_find($chunks, static fn($chunk) => \str_starts_with($chunk, "EXIF")) !== null;
+        $xmp        = \array_find($chunks, static fn($chunk) => \str_starts_with($chunk, "XMP ")) !== null;
+        $animation  = \array_find($chunks, static fn($chunk) => \str_starts_with($chunk, "ANIM")) !== null;
+
         $buffer = new StringBuffer();
         $buffer->setOrder(Buffer::LITTLE_ENDIAN);
 
@@ -97,8 +103,15 @@ final class DecodeExtendedHeaderTest extends TestCase
         $buffer->insertString("WEBP");
         $buffer->insertString("VP8X");
         $buffer->insertInt(10);
-        // We don't care for the flags.
-        $buffer->insertInt(0);
+
+        // Feature flags, the first two bits and the last bit are reserved.
+        $bitField = 0;
+        $bitField |= (int)$iccProfile << 5;
+        $bitField |= (int)$alpha      << 4;
+        $bitField |= (int)$exif       << 3;
+        $bitField |= (int)$xmp        << 2;
+        $bitField |= (int)$animation  << 1;
+        $buffer->insertInt($bitField);
 
         // Encode the width and height as a 3 byte value each.
         $width = ($width - 1) & 0x00FFFFFF;

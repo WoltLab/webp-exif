@@ -5,19 +5,13 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use TypeError;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Chunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\Chunk\Vp8x;
-use Woltlab\WebpExif\Exception\DataAfterLastChunk;
 use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
 use Woltlab\WebpExif\Exception\MissingChunks;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
-use Woltlab\WebpExif\Exception\ExtraVp8xChunk;
-use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
-use Woltlab\WebpExif\Exception\Vp8xWithoutChunks;
 
 final class WebP
 {
@@ -134,38 +128,7 @@ final class WebP
      */
     private static function fromExtendedFormat(Vp8x $vp8x, array $chunks): self
     {
-        if ($chunks === []) {
-            throw new Vp8xWithoutChunks();
-        }
-
-        $nestedVp8x = \array_find($chunks, static fn($chunk) => $chunk instanceof Vp8x);
-        if ($nestedVp8x !== null) {
-            throw new ExtraVp8xChunk();
-        }
-
-        // The VP8X chunk most contain image data that can come in two flavors:
-        //  1. Still images must contain either a VP8 or VP8L chunk.
-        //  2. Animated images must contain multiple frames.
-        $hasAnimation = \array_find($chunks, static fn($chunk) => $chunk instanceof Anim);
-        if ($hasAnimation) {
-            $frames = \array_filter(
-                $chunks,
-                static fn($chunk) => $chunk instanceof Anmf
-            );
-
-            if (\count($frames) < 2) {
-                throw new Vp8xMissingImageData(stillImage: false);
-            }
-        } else {
-            $hasBitstreamChunk = \array_find(
-                $chunks,
-                static fn($chunk) => ($chunk instanceof Vp8) || ($chunk instanceof Vp8l)
-            );
-
-            if (!$hasBitstreamChunk) {
-                throw new Vp8xMissingImageData(stillImage: true);
-            }
-        }
+        $chunks = $vp8x->filterChunks($chunks);
 
         return new WebP($vp8x->width, $vp8x->height, $chunks);
     }

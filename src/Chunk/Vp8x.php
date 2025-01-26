@@ -6,7 +6,12 @@ namespace Woltlab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
 use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
+use Woltlab\WebpExif\Exception\ExtraVp8xChunk;
+use Woltlab\WebpExif\Exception\UnexpectedChunk;
+use Woltlab\WebpExif\Exception\Vp8xAbsentChunk;
 use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
+use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
+use Woltlab\WebpExif\Exception\Vp8xWithoutChunks;
 
 final class Vp8x extends Chunk
 {
@@ -27,6 +32,113 @@ final class Vp8x extends Chunk
             // chunks that follow afterwards.
             ""
         );
+    }
+
+    /**
+     * Filters the list of chunks and validates them against the specificiations
+     * for VP8X images.
+     *
+     * @param list<Chunk> $chunks
+     * @return list<Chunk>
+     */
+    public function filterChunks(array $chunks): array
+    {
+        if ($chunks === []) {
+            throw new Vp8xWithoutChunks();
+        }
+
+        $nestedVp8x = \array_find($chunks, static fn($chunk) => $chunk instanceof Vp8x);
+        if ($nestedVp8x !== null) {
+            throw new ExtraVp8xChunk();
+        }
+
+        if ($this->iccProfile) {
+            $hasIccProfile = self::removeExtraChunks(Iccp::class, $chunks);
+            if (!$hasIccProfile) {
+                throw new Vp8xAbsentChunk("ICCP");
+            }
+        }
+
+        if ($this->alpha) {
+            $hasAlpha = self::removeExtraChunks(Alph::class, $chunks);
+            if (!$hasAlpha) {
+                throw new Vp8xAbsentChunk("ALPH");
+            }
+        }
+
+        if ($this->exif) {
+            $hasExif = self::removeExtraChunks(Exif::class, $chunks);
+            if (!$hasExif) {
+                throw new Vp8xAbsentChunk("EXIF");
+            }
+        }
+
+        if ($this->xmp) {
+            $hasXmp = self::removeExtraChunks(Xmp::class, $chunks);
+            if (!$hasXmp) {
+                throw new Vp8xAbsentChunk("XMP ");
+            }
+        }
+
+        $frames = \array_filter(
+            $chunks,
+            static fn($chunk) => $chunk instanceof Anmf
+        );
+        $bitstreams = \array_filter(
+            $chunks,
+            static fn($chunk) => ($chunk instanceof Vp8) || ($chunk instanceof Vp8l)
+        );
+
+        // The VP8X chunk most contain image data that can come in two flavors:
+        //  1. Still images must contain either a VP8 or VP8L chunk.
+        //  2. Animated images must contain multiple frames.
+        if ($this->animation) {
+            if (\count($frames) < 2) {
+                throw new Vp8xMissingImageData(stillImage: false);
+            }
+
+            $bitstream = \array_shift($bitstreams);
+            if ($bitstream !== null) {
+                throw new UnexpectedChunk($bitstream->getFourCC(), $bitstream->getOffset());
+            }
+        } else {
+            if (\count($bitstreams) !== 1) {
+                throw new Vp8xMissingImageData(stillImage: true);
+            }
+
+            $frame = \array_shift($frames);
+            if ($frame !== null) {
+                throw new UnexpectedChunk($frame->getFourCC(), $frame->getOffset());
+            }
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Removes all chunks sharing the same class except for the first
+     * occurrence. Returns true if at least one such chunk was found.
+     *
+     * @param class-string<Chunk> $className
+     * @param list<Chunk> $chunks
+     */
+    private  function removeExtraChunks(string $className, array &$chunks): bool
+    {
+        $hasChunk = false;
+        $chunks = \array_values(\array_filter($chunks, static function ($chunk) use ($className, &$hasChunk) {
+            if (!($chunk instanceof $className)) {
+                return true;
+            }
+
+            if (!$hasChunk) {
+                $hasChunk = true;
+                return true;
+            }
+
+            return false;
+        }));
+
+        return $hasChunk;
     }
 
     public static function fromBuffer(Buffer $buffer): self

@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Woltlab\WebpExif\Exception;
+
+use RuntimeException;
+
+/** @internal */
+final class Vp8xAbsentChunk extends RuntimeException
+{
+    public function __construct(string $fourCC)
+    {
+        parent::__construct("The VP8X header indicates the presence of one or more `{$fourCC}` chunks but none are present");
+    }
+}
