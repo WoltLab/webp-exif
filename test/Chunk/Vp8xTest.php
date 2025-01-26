@@ -60,18 +60,94 @@ final class Vp8xTest extends TestCase
         $this->assertEquals($vp8x->height, $height);
     }
 
+    public function testReportsNoSetFlags(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x());
+        $this->validateFlags($vp8x);
+    }
+
+    public function testReportsIccpProfileFlag(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(iccProfile: true));
+        $this->validateFlags($vp8x, iccProfile: true);
+    }
+
+    public function testReportsAlphaFlag(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(alpha: true));
+        $this->validateFlags($vp8x, alpha: true);
+    }
+
+    public function testReportsExifFlag(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(exif: true));
+        $this->validateFlags($vp8x, exif: true);
+    }
+
+    public function testReportsXmpFlag(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(xmp: true));
+        $this->validateFlags($vp8x, xmp: true);
+    }
+
+    public function testReportsAnimationFlag(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(animation: true));
+        $this->validateFlags($vp8x, animation: true);
+    }
+
+    public function testReportsAllFlags(): void
+    {
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(iccProfile: true, alpha: true, exif: true, xmp: true, animation: true));
+        $this->validateFlags($vp8x, iccProfile: true, alpha: true, exif: true, xmp: true, animation: true);
+    }
+
+    private function validateFlags(
+        Vp8x $vp8x,
+        bool $iccProfile = false,
+        bool $alpha = false,
+        bool $exif = false,
+        bool $xmp = false,
+        bool $animation = false,
+    ): void {
+        $this->assertEquals([
+            $iccProfile,
+            $alpha,
+            $exif,
+            $xmp,
+            $animation,
+        ], [
+            $vp8x->iccProfile,
+            $vp8x->alpha,
+            $vp8x->exif,
+            $vp8x->xmp,
+            $vp8x->animation,
+        ]);
+    }
+
     private function generateVp8x(
         int $headerLength = 10,
         int $width = 1_234,
         int $height = 2_345,
+        bool $iccProfile = false,
+        bool $alpha = false,
+        bool $exif = false,
+        bool $xmp = false,
+        bool $animation = false,
     ): Buffer {
         $buffer = new StringBuffer();
         $buffer->setOrder(Buffer::LITTLE_ENDIAN);
 
         $buffer->insertInt($headerLength);
 
-        // We don't care for the flags.
-        $buffer->insertInt(0);
+        // Feature flags, the first two bits and the last bit are reserved.
+        $bitField = 0;
+        $bitField |= (int)$iccProfile << 5;
+        $bitField |= (int)$alpha      << 4;
+        $bitField |= (int)$exif       << 3;
+        $bitField |= (int)$xmp        << 2;
+        $bitField |= (int)$animation  << 1;
+        $buffer->insertInt($bitField);
 
         // Encode the width and height as a 3 byte value each.
         $width = ($width - 1) & 0x00FFFFFF;

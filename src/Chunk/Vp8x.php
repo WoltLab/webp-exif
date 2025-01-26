@@ -14,6 +14,11 @@ final class Vp8x extends Chunk
         public readonly int $width,
         public readonly int $height,
         int $offset,
+        public readonly bool $iccProfile,
+        public readonly bool $alpha,
+        public readonly bool $exif,
+        public readonly bool $xmp,
+        public readonly bool $animation,
     ) {
         parent::__construct(
             "VP8X",
@@ -36,10 +41,17 @@ final class Vp8x extends Chunk
 
         $startOfData = $buffer->position();
 
-        // The following 4 bytes contain a single byte containing a bitmask for
-        // the contained features (which we can safely ignore at this point),
-        // followed by 24 reserved bits.
-        $buffer->skip(4);
+        // The next byte contains a bit field for the features of this image,
+        // the first two bits and the last bit are reserved and MUST be ignored.
+        $bitField = $buffer->getByte();
+        $iccProfile = ($bitField & 0b00100000) === 32;
+        $alpha      = ($bitField & 0b00010000) === 16;
+        $exif       = ($bitField & 0b00001000) ===  8;
+        $xmp        = ($bitField & 0b00000100) ===  4;
+        $animation  = ($bitField & 0b00000010) ===  2;
+
+        // The next 24 bits are reserved.
+        $buffer->skip(3);
 
         // The width of the canvas is represented as a uint24LE but minus one,
         // therefore we have to add 1 when decoding the value.
@@ -59,7 +71,16 @@ final class Vp8x extends Chunk
             throw new DimensionsExceedInt32($width, $height);
         }
 
-        return new Vp8x($width, $height, $startOfData - 8);
+        return new Vp8x(
+            $width,
+            $height,
+            $startOfData - 8,
+            $iccProfile,
+            $alpha,
+            $exif,
+            $xmp,
+            $animation
+        );
     }
 
     private static function decodeDimension(Buffer $buffer): int
