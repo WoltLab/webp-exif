@@ -24,10 +24,7 @@ final class DecodeAssetTest extends TestCase
         $this->assertTrue($webp->getByteLength() > 0);
 
         $jsonData = @file_get_contents("{$pathname}.json");
-        if ($jsonData === false) {
-            // TODO: Remove this once we have set up the JSON for all test files!
-            return;
-        }
+        assert($jsonData !== false);
 
         $json = json_decode($jsonData, true, flags: JSON_THROW_ON_ERROR);
         assert(is_array($json) && isset($json['chunks']) && is_array($json['chunks']));

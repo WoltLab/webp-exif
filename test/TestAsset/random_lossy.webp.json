@@ -1,0 +1,66 @@
+{
+  "_SOURCE": "https://github.com/image-rs/image-webp/blob/9310d585ab4f6a361326af07fa90201dda963c5f/tests/images/animated/random_lossy.webp",
+  "_LICENSE": "MIT",
+  "chunks": [
+    {
+      "fourCC": "VP8X",
+      "offset": 12,
+      "length": 18,
+      "width": 97,
+      "height": 87
+    },
+    {
+      "fourCC": "ANIM",
+      "offset": 30,
+      "length": 14
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 44,
+      "length": 5674
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 68,
+      "length": 5650,
+      "width": 99,
+      "height": 87
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 5718,
+      "length": 5626
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 5742,
+      "length": 5602,
+      "width": 99,
+      "height": 87
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 11344,
+      "length": 5692
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 11368,
+      "length": 5668,
+      "width": 99,
+      "height": 87
+    },
+    {
+      "fourCC": "ANMF",
+      "offset": 17036,
+      "length": 5630
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 17060,
+      "length": 5606,
+      "width": 99,
+      "height": 87
+    }
+  ]
+}

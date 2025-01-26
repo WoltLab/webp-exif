@@ -1,0 +1,13 @@
+{
+  "_SOURCE": "https://github.com/mathiasbynens/small/blob/267b39f682598eebb0dafe7590b1504be79b5cad/webp.webp",
+  "_LICENSE": "To the extent possible under law, the author has waived all copyright and related or neighboring rights to this work.",
+  "chunks": [
+    {
+      "fourCC": "VP8L",
+      "offset": 12,
+      "length": 14,
+      "width": 11330,
+      "height": 446
+    }
+  ]
+}
