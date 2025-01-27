@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use TypeError;
+use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Chunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
@@ -41,6 +42,26 @@ final class WebP
             static fn(int $length, Chunk $chunk) => $length + $chunk->getLength() + 8,
             0
         );
+    }
+
+    /**
+     * WebP can be encoded using the simple format that only contains a single
+     * VP8 or VP8L chunk and is a bit smaller. Animations or any sort of extra
+     * information is only supported in the extended file format.
+     */
+    public function containsOnlyBitstream(): bool
+    {
+        if (\count($this->chunks) > 1) {
+            return false;
+        }
+
+        // The simple format can only contain a single VP8/VP8L chunk.
+        return \array_all($this->chunks, static function ($chunk) {
+            return match ($chunk::class) {
+                Vp8::class, Vp8l::class => true,
+                default => false,
+            };
+        });
     }
 
     /**

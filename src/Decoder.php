@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
-use Nelexa\Buffer\BufferException;
 use Nelexa\Buffer\StringBuffer;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Chunk;
-use Woltlab\WebpExif\Chunk\Exception\UnknownChunkWithKnownFourCC;
-use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
-use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
-use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
-use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
@@ -28,7 +22,6 @@ use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 use Woltlab\WebpExif\Exception\NotEnoughData;
 use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
-use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 
 final class Decoder
 {

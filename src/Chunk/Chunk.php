@@ -22,7 +22,13 @@ abstract class Chunk
         return \strlen($this->data);
     }
 
-    public function getOffset(): int {
+    public function getOffset(): int
+    {
         return $this->offset;
+    }
+
+    public function getRawBytes(): string
+    {
+        return $this->data;
     }
 }
