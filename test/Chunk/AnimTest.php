@@ -11,7 +11,7 @@ final class AnimTest extends TestCase
     public function testReportsCorrectFourCC(): void
     {
         $chunk = Anim::forBytes(0, "");
-        $this->assertSame(
+        self::assertSame(
             ChunkType::ANIM,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -25,7 +25,7 @@ final class AnimTest extends TestCase
         $offset = 7;
 
         $chunk = Anim::forBytes($offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );

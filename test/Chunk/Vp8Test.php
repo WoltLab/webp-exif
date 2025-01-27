@@ -17,7 +17,7 @@ final class Vp8Test extends TestCase
     {
         $pseudoValidVp8 = $this->getBufferFor("\x0A\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\xFF\xFF");
         $chunk = Vp8::fromBuffer($pseudoValidVp8);
-        $this->assertSame(
+        self::assertSame(
             ChunkType::VP8,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -59,8 +59,8 @@ final class Vp8Test extends TestCase
         );
         $vp8 = Vp8::fromBuffer($buffer);
 
-        $this->assertEquals($width, $vp8->width);
-        $this->assertEquals($height, $vp8->height);
+        self::assertEquals($width, $vp8->width);
+        self::assertEquals($height, $vp8->height);
     }
 
     private function encodeDimensions(int $dimension): string

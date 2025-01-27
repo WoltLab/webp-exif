@@ -11,7 +11,7 @@ final class XmpTest extends TestCase
     public function testReportsCorrectFourCC(): void
     {
         $chunk = Xmp::forBytes(0, "");
-        $this->assertSame(
+        self::assertSame(
             ChunkType::XMP,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -25,7 +25,7 @@ final class XmpTest extends TestCase
         $offset = 7;
 
         $chunk = Xmp::forBytes($offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );

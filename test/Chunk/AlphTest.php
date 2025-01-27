@@ -11,7 +11,7 @@ final class AlphTest extends TestCase
     public function testReportsCorrectFourCC(): void
     {
         $chunk = Alph::forBytes(0, "");
-        $this->assertSame(
+        self::assertSame(
             ChunkType::ALPH,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -25,7 +25,7 @@ final class AlphTest extends TestCase
         $offset = 7;
 
         $chunk = Alph::forBytes($offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );

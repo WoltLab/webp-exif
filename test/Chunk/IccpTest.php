@@ -11,7 +11,7 @@ final class IccpTest extends TestCase
     public function testReportsCorrectFourCC(): void
     {
         $chunk = Iccp::forBytes(0, "");
-        $this->assertSame(
+        self::assertSame(
             ChunkType::ICCP,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -25,7 +25,7 @@ final class IccpTest extends TestCase
         $offset = 7;
 
         $chunk = Iccp::forBytes($offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );

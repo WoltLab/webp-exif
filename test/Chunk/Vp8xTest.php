@@ -16,7 +16,7 @@ final class Vp8xTest extends TestCase
     {
         $pseudoValidVp8x = $this->getBufferFor("\x0A\x00\x00\x00" . str_repeat("\x00", 10));
         $chunk = Vp8x::fromBuffer($pseudoValidVp8x);
-        $this->assertSame(
+        self::assertSame(
             ChunkType::VP8X,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -56,8 +56,8 @@ final class Vp8xTest extends TestCase
         $height = 66;
         $vp8x = Vp8x::fromBuffer($this->generateVp8x(width: $width, height: $height));
 
-        $this->assertEquals($vp8x->width, $width);
-        $this->assertEquals($vp8x->height, $height);
+        self::assertEquals($vp8x->width, $width);
+        self::assertEquals($vp8x->height, $height);
     }
 
     public function testReportsNoSetFlags(): void
@@ -110,7 +110,7 @@ final class Vp8xTest extends TestCase
         bool $xmp = false,
         bool $animation = false,
     ): void {
-        $this->assertEquals([
+        self::assertEquals([
             $iccProfile,
             $alpha,
             $exif,

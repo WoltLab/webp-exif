@@ -11,7 +11,7 @@ final class ExifTest extends TestCase
     public function testReportsCorrectFourCC(): void
     {
         $chunk = Exif::forBytes(0, "");
-        $this->assertSame(
+        self::assertSame(
             ChunkType::EXIF,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -25,7 +25,7 @@ final class ExifTest extends TestCase
         $offset = 7;
 
         $chunk = Exif::forBytes($offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );

@@ -21,7 +21,7 @@ final class DecodeAssetTest extends TestCase
         // Placeholder assertion that makes both phpunit and phpstan happy
         // because we test those files to validate that the decoder works.
         // see https://github.com/sebastianbergmann/phpunit/issues/3016
-        $this->assertTrue($webp->getByteLength() > 0);
+        self::assertTrue($webp->getByteLength() > 0);
 
         $jsonData = @file_get_contents("{$pathname}.json");
         assert($jsonData !== false);
@@ -74,7 +74,7 @@ final class DecodeAssetTest extends TestCase
                 $effectiveOffset -= 4;
             }
 
-            $this->assertEquals(
+            self::assertEquals(
                 [
                     $expected['fourCC'],
                     $expected['offset'],

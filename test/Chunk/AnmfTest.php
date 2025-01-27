@@ -19,7 +19,7 @@ final class AnmfTest extends TestCase
             "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
         ];
         $chunk = Anmf::fromBuffer($this->generateAnmf($frameData));
-        $this->assertSame(
+        self::assertSame(
             ChunkType::ANMF,
             ChunkType::fromFourCC($chunk->getFourCC()),
         );
@@ -40,7 +40,7 @@ final class AnmfTest extends TestCase
         $buffer->insertString(str_repeat("\x00", $offset));
 
         $chunk = Anmf::fromBuffer($buffer);
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );
@@ -56,7 +56,7 @@ final class AnmfTest extends TestCase
 
         $chunk = Anmf::fromBuffer($buffer);
 
-        $this->assertEquals(
+        self::assertEquals(
             count($chunk->getDataChunks()),
             2
         );
@@ -72,7 +72,7 @@ final class AnmfTest extends TestCase
 
         $chunk = Anmf::fromBuffer($buffer);
 
-        $this->assertEquals(
+        self::assertEquals(
             count($chunk->getDataChunks()),
             2
         );
@@ -90,22 +90,22 @@ final class AnmfTest extends TestCase
         $chunk = Anmf::fromBuffer($buffer);
         $dataChunks = $chunk->getDataChunks();
 
-        $this->assertEquals(count($dataChunks), 3);
-        $this->assertEquals([
+        self::assertEquals(count($dataChunks), 3);
+        self::assertEquals([
             $dataChunks[0]->getFourCC(),
             $dataChunks[0]->getOffset(),
         ], [
             "ALPH",
             20
         ]);
-        $this->assertEquals([
+        self::assertEquals([
             $dataChunks[1]->getFourCC(),
             $dataChunks[1]->getOffset()
         ], [
             "VP8L",
             28
         ]);
-        $this->assertEquals([
+        self::assertEquals([
             $dataChunks[2]->getFourCC(),
             $dataChunks[2]->getOffset(),
         ], [

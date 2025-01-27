@@ -20,7 +20,7 @@ final class UnknownChunkTest extends TestCase
         $fourCC = "####";
         $chunk = UnknownChunk::forBytes($fourCC, 0, "");
 
-        $this->assertEquals($fourCC, $chunk->getFourCC());
+        self::assertEquals($fourCC, $chunk->getFourCC());
     }
 
     public function testReportsCorrectOffset(): void
@@ -31,7 +31,7 @@ final class UnknownChunkTest extends TestCase
         $offset = 7;
 
         $chunk = UnknownChunk::forBytes("####", $offset, "");
-        $this->assertSame(
+        self::assertSame(
             $offset,
             $chunk->getOffset(),
         );
