@@ -7,6 +7,7 @@ namespace Woltlab\WebpExif;
 use TypeError;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
+use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Chunk;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
@@ -92,6 +93,19 @@ final class WebP
     public function getAnimation(): ?Anim
     {
         return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Anim);
+    }
+
+    /**
+     * @return list<Anmf>
+     */
+    public function getAnimationFrames(): array
+    {
+        return \array_values(
+            \array_filter(
+                $this->chunks,
+                static fn($chunk) => $chunk instanceof Anmf
+            )
+        );
     }
 
     public function getBitstream(): Vp8|Vp8l|null

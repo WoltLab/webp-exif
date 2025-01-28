@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Woltlab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
-use Nelexa\Buffer\BufferException;
 use Nelexa\Buffer\StringBuffer;
 use Woltlab\WebpExif\Chunk\Chunk;
 
@@ -37,7 +36,8 @@ final class Encoder
 
         $buffer->insertString("RIFF");
 
-        $riffHeaderLength = 12;
+        // The header length does include neither "RIFF" nor the length itself.
+        $riffHeaderLength = 4;
         $chunkHeader = 8;
         $buffer->insertInt($riffHeaderLength + $chunkHeader + $bitstream->getLength());
 
@@ -46,6 +46,11 @@ final class Encoder
         $buffer->insertString($bitstream->getFourCC());
         $buffer->insertInt($bitstream->getLength());
         $buffer->insertString($bitstream->getRawBytes());
+
+        if (\strlen($bitstream->getRawBytes()) % 2 === 1) {
+            // The padding byte is not part of the RIFF length.
+            $buffer->insertByte(0);
+        }
 
         return $buffer->toString();
     }
@@ -71,9 +76,20 @@ final class Encoder
             $this->writeChunk($iccp, $buffer);
         }
 
-        $anmf = $webp->getAnimation();
-        if ($anmf !== null) {
-            $this->writeChunk($anmf, $buffer);
+        $anim = $webp->getAnimation();
+        if ($anim !== null) {
+            $this->writeChunk($anim, $buffer);
+
+            $frames = $webp->getAnimationFrames();
+            \assert(\count($frames) !== 0);
+
+            foreach ($frames as $frame) {
+                $this->writeChunk($frame, $buffer);
+
+                foreach ($frame->getDataChunks() as $dataChunk) {
+                    $this->writeChunk($dataChunk, $buffer);
+                }
+            }
         } else {
             $alph = $webp->getAlpha();
             if ($alph !== null) {
@@ -100,7 +116,9 @@ final class Encoder
         }
 
         $buffer->setPosition(4);
-        $buffer->insertInt($buffer->size() - 8);
+        // The header length does include neither "RIFF" nor the length itself.
+        // Only substract 4 because the length increases the size by 4 bytes.
+        $buffer->insertInt($buffer->size() - 4);
 
         return $buffer->toString();
     }
@@ -110,6 +128,10 @@ final class Encoder
         $buffer->insertString($chunk->getFourCC());
         $buffer->insertInt($chunk->getLength());
         $buffer->insertString($chunk->getRawBytes());
+
+        if (\strlen($chunk->getRawBytes()) % 2 === 1) {
+            $buffer->insertByte(0);
+        }
     }
 
     private function encodeExtendedFormatFeatures(WebP $webp, Buffer $buffer): void

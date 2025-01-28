@@ -29,7 +29,10 @@ final class Anmf extends Chunk
     {
         return \array_reduce(
             $this->chunks,
-            static fn($acc, $chunk) => $acc + $chunk->getLength() + 8,
+            static function ($acc, $chunk) {
+                $paddingByte = $chunk->getLength() % 2;
+                return $acc + $chunk->getLength() + $paddingByte + 8;
+            },
             parent::getLength(),
         );
     }
