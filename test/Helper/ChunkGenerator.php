@@ -10,6 +10,7 @@ use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\Chunk\Vp8x;
+use Woltlab\WebpExif\Chunk\Xmp;
 
 final class ChunkGenerator
 {
@@ -49,6 +50,15 @@ final class ChunkGenerator
         bool $animation = false,
     ): Vp8x {
         return Vp8x::fromParameters($offset, $width, $height, $iccProfile, $alpha, $exif, $xmp, $animation);
+    }
+
+    public function xmp(int $offset = 0, ?string $bytes = null): Xmp
+    {
+        if ($bytes === null) {
+            $bytes = "\xDE\xAD\xBA\xBE";
+        }
+
+        return Xmp::forBytes($offset, $bytes);
     }
 
     private function createBuffer(string $value = ''): Buffer

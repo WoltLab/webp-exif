@@ -53,4 +53,50 @@ final class WebPTest extends TestCase
 
         self::assertEquals($exif, $webp->getExif());
     }
+
+    public function testRemoveXmp(): void
+    {
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
+        $xmp = $generator->xmp();
+        $vp8x = $generator->vp8x(width: $vp8l->width, height: $vp8l->height, xmp: true);
+        $webp = WebP::fromChunks([$vp8x, $vp8l, $xmp]);
+
+        self::assertEquals($xmp, $webp->getXmp());
+
+        $webp = $webp->withXmp(null);
+
+        self::assertEquals(null, $webp->getXmp());
+    }
+
+    public function testReplaceXmp(): void
+    {
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
+        $xmp = $generator->xmp();
+        $vp8x = $generator->vp8x(width: $vp8l->width, height: $vp8l->height, xmp: true);
+        $webp = WebP::fromChunks([$vp8x, $vp8l, $xmp]);
+
+        self::assertEquals($xmp, $webp->getXmp());
+
+        $bytes = "\xDE\xAD\xC0\xDE";
+        $xmp = $generator->xmp(bytes: $bytes);
+        $webp = $webp->withXmp($xmp);
+
+        self::assertEquals($bytes, $webp->getXmp()?->getRawBytes());
+    }
+
+    public function testAddXmp(): void
+    {
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
+        $webp = WebP::fromChunks([$vp8l]);
+
+        self::assertEquals(null, $webp->getXmp());
+
+        $xmp = $generator->xmp();
+        $webp = $webp->withXmp($xmp);
+
+        self::assertEquals($xmp, $webp->getXmp());
+    }
 }

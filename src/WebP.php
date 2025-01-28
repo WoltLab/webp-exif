@@ -138,6 +138,25 @@ final class WebP
         return $webp;
     }
 
+    public function withXmp(?Xmp $xmp): self
+    {
+        $chunks = \array_values(
+            \array_filter(
+                $this->chunks,
+                static fn($chunk) => !($chunk instanceof Xmp)
+            )
+        );
+
+        if ($xmp !== null) {
+            $chunks[] = $xmp;
+        }
+
+        $webp = clone $this;
+        $webp->chunks = $chunks;
+
+        return $webp;
+    }
+
     /**
      * @return array{'length': int, 'width': int, 'height': int, 'chunks': list<string>}
      */
