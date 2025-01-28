@@ -6,10 +6,15 @@ namespace Woltlab\WebpExif;
 
 use TypeError;
 use Woltlab\WebpExif\Chunk\Alph;
+use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Chunk;
+use Woltlab\WebpExif\Chunk\Exif;
+use Woltlab\WebpExif\Chunk\Iccp;
+use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\Chunk\Vp8x;
+use Woltlab\WebpExif\Chunk\Xmp;
 use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
 use Woltlab\WebpExif\Exception\MissingChunks;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
@@ -62,6 +67,75 @@ final class WebP
                 default => false,
             };
         });
+    }
+
+    public function getIccProfile(): ?Iccp
+    {
+        return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Iccp);
+    }
+
+    public function getAlpha(): ?Alph
+    {
+        return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Alph);
+    }
+
+    public function getExif(): ?Exif
+    {
+        return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Exif);
+    }
+
+    public function getXmp(): ?Xmp
+    {
+        return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Xmp);
+    }
+
+    public function getAnimation(): ?Anim
+    {
+        return \array_find($this->chunks, static fn($chunk) => $chunk instanceof Anim);
+    }
+
+    public function getBitstream(): Vp8|Vp8l|null
+    {
+        if ($this->getAnimation() !== null) {
+            return null;
+        }
+
+        return \array_find(
+            $this->chunks,
+            static fn($chunk) => $chunk instanceof Vp8 || $chunk instanceof Vp8l
+        );
+    }
+
+    /**
+     * @return list<UnknownChunk>
+     */
+    public function getUnknownChunks(): array
+    {
+        return \array_values(
+            \array_filter(
+                $this->chunks,
+                static fn($chunk) => $chunk instanceof UnknownChunk
+            )
+        );
+    }
+
+    public function withExif(?Exif $exif): self
+    {
+        $chunks = \array_values(
+            \array_filter(
+                $this->chunks,
+                static fn($chunk) => !($chunk instanceof Exif)
+            )
+        );
+
+        if ($exif !== null) {
+            $chunks[] = $exif;
+        }
+
+        $webp = clone $this;
+        $webp->chunks = $chunks;
+
+        return $webp;
     }
 
     /**

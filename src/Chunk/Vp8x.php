@@ -122,7 +122,7 @@ final class Vp8x extends Chunk
      * @param class-string<Chunk> $className
      * @param list<Chunk> $chunks
      */
-    private  function removeExtraChunks(string $className, array &$chunks): bool
+    private function removeExtraChunks(string $className, array &$chunks): bool
     {
         $hasChunk = false;
         $chunks = \array_values(\array_filter($chunks, static function ($chunk) use ($className, &$hasChunk) {
