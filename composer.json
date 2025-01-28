@@ -26,6 +26,11 @@
       "Woltlab\\WebpExif\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "WoltlabTest\\WebpExif\\": "test/"
+    }
+  },
   "scripts": {
     "test": "phpunit --colors=always test",
     "phpstan": "phpstan"

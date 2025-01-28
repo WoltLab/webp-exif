@@ -2,28 +2,19 @@
 
 declare(strict_types=1);
 
-use Nelexa\Buffer\Buffer;
-use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
 use Woltlab\WebpExif\Chunk\Exif;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\Chunk\Vp8l;
-use Woltlab\WebpExif\Chunk\Vp8x;
 use Woltlab\WebpExif\Encoder;
 use Woltlab\WebpExif\WebP;
+use WoltlabTest\WebpExif\Helper\ChunkGenerator;
 
 final class EncoderTest extends TestCase
 {
     public function testEncodeSimpleVp8(): void
     {
-        $buffer = new StringBuffer();
-        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
-        $buffer->insertString("\x08\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\xFF\xFF");
-        $buffer->setReadOnly(true);
-        $buffer->setPosition(0);
-
-        $vp8l = Vp8::fromBuffer($buffer);
-        $webp = WebP::fromChunks([$vp8l]);
+        $generator = new ChunkGenerator();
+        $vp8 = $generator->vp8();
+        $webp = WebP::fromChunks([$vp8]);
 
         $encoder = new Encoder();
         $bytes = $encoder->fromWebP($webp);
@@ -36,13 +27,8 @@ final class EncoderTest extends TestCase
 
     public function testEncodeSimpleVp8l(): void
     {
-        $buffer = new StringBuffer();
-        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
-        $buffer->insertString("\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B");
-        $buffer->setReadOnly(true);
-        $buffer->setPosition(0);
-
-        $vp8l = Vp8l::fromBuffer($buffer);
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
         $webp = WebP::fromChunks([$vp8l]);
 
         $encoder = new Encoder();
@@ -56,16 +42,11 @@ final class EncoderTest extends TestCase
 
     public function testEncodeWithExif(): void
     {
-        $buffer = new StringBuffer();
-        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
-        $buffer->insertString("\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B");
-        $buffer->setReadOnly(true);
-        $buffer->setPosition(0);
-
-        $vp8l = Vp8l::fromBuffer($buffer);
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
         $webp = WebP::fromChunks([$vp8l]);
 
-        $exif = Exif::forBytes(0, "\xDE\xAD\xBE\xEF");
+        $exif = $generator->exif(bytes: "\xDE\xAD\xBE\xEF");
         $webp = $webp->withExif($exif);
 
         $encoder = new Encoder();

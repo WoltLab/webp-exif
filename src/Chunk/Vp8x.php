@@ -195,6 +195,22 @@ final class Vp8x extends Chunk
         );
     }
 
+    /**
+     * @internal
+     */
+    public static function fromParameters(
+        int $offset,
+        int $width,
+        int $height,
+        bool $iccProfile,
+        bool $alpha,
+        bool $exif,
+        bool $xmp,
+        bool $animation
+    ): self {
+        return new Vp8x($width, $height, $offset, $iccProfile, $alpha, $exif, $xmp, $animation);
+    }
+
     private static function decodeDimension(Buffer $buffer): int
     {
         $a = $buffer->getUnsignedByte();
