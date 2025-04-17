@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f006b75c008633931c975bb3aeb6eef7",
+    "content-hash": "219a33f4fae033fa0e801d60a39dd32c",
     "packages": [
         {
             "name": "nelexa/buffer",
