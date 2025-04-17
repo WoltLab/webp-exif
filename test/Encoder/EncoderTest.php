@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Decoder;
 use Woltlab\WebpExif\Encoder;
 use Woltlab\WebpExif\WebP;
