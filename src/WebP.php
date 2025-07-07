@@ -152,6 +152,25 @@ final class WebP
         return $webp;
     }
 
+    public function withIccp(?Iccp $iccp): self
+    {
+        $chunks = \array_values(
+            \array_filter(
+                $this->chunks,
+                static fn($chunk) => !($chunk instanceof Iccp)
+            )
+        );
+
+        if ($iccp !== null) {
+            $chunks[] = $iccp;
+        }
+
+        $webp = clone $this;
+        $webp->chunks = $chunks;
+
+        return $webp;
+    }
+
     public function withXmp(?Xmp $xmp): self
     {
         $chunks = \array_values(
