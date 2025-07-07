@@ -39,12 +39,26 @@ final class Exif extends Chunk
         // the quantization table (DQT, 0xFF xDB). The SOI (start of image, 0xFF
         // 0xD8) is prepended below to simpify the construction of the image.
         $soiTag = "\xFF\xD8";
-        $exifTag = "\xFF\xE1\xC3\xEF\x45\x78\x69\x66\x00\x00";
 
-        $exif = \exif_read_data(
+        $app1Tag = "\xFF\xE1";
+        $exifHeader = "\x45\x78\x69\x66\x00\x00";
+
+        // The byte length is the length of the EXIF header (6), the payload and
+        // the two bytes for the length itself.
+        $byteLength = \pack("n", 2 + 6 + \strlen($bytes));
+
+        // We must suppress warnings here to gracefully recover from bad EXIF data.
+        $exif = @\exif_read_data(
             \sprintf(
                 "data://image/jpeg;base64,%s",
-                \base64_encode($soiTag . $exifTag . $bytes . $jpegBody),
+                \base64_encode(
+                    $soiTag .
+                        $app1Tag .
+                        $byteLength .
+                        $exifHeader .
+                        $bytes .
+                        $jpegBody
+                ),
             ),
         );
 
