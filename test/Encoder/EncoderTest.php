@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use Nelexa\Buffer\Buffer;
+use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Decoder;
 use Woltlab\WebpExif\Encoder;
 use Woltlab\WebpExif\WebP;
@@ -22,6 +25,24 @@ final class EncoderTest extends TestCase
 
         self::assertEquals(
             "RIFF\x14\x00\x00\x00WEBPVP8 \x08\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF",
+            $bytes,
+        );
+    }
+
+    public function testEncodeSimpleVp8WithUnevenBitstreamLength(): void
+    {
+        $buffer = new StringBuffer("\x09\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\xFF\xFF\x00");
+        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
+        $buffer->setReadOnly(true);
+
+        $vp8 = Vp8::fromBuffer($buffer);
+        $webp = WebP::fromChunks([$vp8]);
+
+        $encoder = new Encoder();
+        $bytes = $encoder->fromWebP($webp);
+
+        self::assertEquals(
+            "RIFF\x15\x00\x00\x00WEBPVP8 \x09\x00\x00\x00\x00\x00\x00\x9D\x01\x2A\xFF\xFF\xFF\x00",
             $bytes,
         );
     }
