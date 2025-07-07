@@ -1,0 +1,31 @@
+{
+  "_SOURCE": "https://github.com/ianare/exif-samples/blob/5332a9cf0220e9c6c93f88a187daa90808051e10/jpg/Canon_40D.jpg",
+  "_ORIGINAL_SOURCE": "https://commons.wikimedia.org/wiki/File:Iguana_iguana_male_head.jpg",
+  "_LICENSE": "CC BY-SA 3.0",
+  "_AUTHOR": "Ianaré Sévi (https://commons.wikimedia.org/wiki/User:Ianare)",
+  "_REMARKS": "The source file was converted from JPEG to WebP, no further modifications have been made.",
+  "chunks": [
+    {
+      "fourCC": "VP8X",
+      "offset": 12,
+      "length": 18,
+      "width": 100,
+      "height": 68
+    },
+    {
+      "fourCC": "ICCP",
+      "offset": 30,
+      "length": 3152
+    },
+    {
+      "fourCC": "VP8 ",
+      "offset": 3182,
+      "length": 1750
+    },
+    {
+      "fourCC": "EXIF",
+      "offset": 4932,
+      "length": 2476
+    }
+  ]
+}
