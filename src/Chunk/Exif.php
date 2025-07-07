@@ -27,7 +27,9 @@ final class Exif extends Chunk
         // We're offloading the EXIF decoding task for `exif_read_data()` which
         // cannot process WebP.
         if (!\function_exists('exif_read_data')) {
+            // @codeCoverageIgnoreStart
             throw new MissingExifExtension();
+            // @codeCoverageIgnoreEnd
         }
 
         // A tiny JPEG is used as the host for the EXIF data.
@@ -62,9 +64,10 @@ final class Exif extends Chunk
             ),
         );
 
-        if ($exif === false) {
-            return null;
-        }
+        // There is no known case where the call to `\exif_read_data()` can fail
+        // hard, there may be warnings about garbage data but since the
+        // constructed host image is guaranteed to be valid, it is infallible.
+        \assert($exif !== false);
 
         /** @var array<string, int|string> $exif */
         return $exif;
