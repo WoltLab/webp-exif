@@ -221,6 +221,23 @@ final class Vp8xTest extends TestCase
         $vp8x->filterChunks([$anmf, $vp8l]);
     }
 
+    public function testRemovalOfDuplicateChunks(): void
+    {
+        $chunkGenerator = new ChunkGenerator();
+        $iccp = $chunkGenerator->iccp();
+        $vp8l = $chunkGenerator->vp8l();
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(iccProfile: true));
+        $chunks = $vp8x->filterChunks([$iccp, $iccp, $vp8l]);
+
+        $filteredChunksAsFourCC = \array_map(
+            static fn($chunk) => $chunk->getFourCC(),
+            $chunks,
+        );
+
+        self::assertEquals(["ICCP", "VP8L"], $filteredChunksAsFourCC);
+    }
+
     private function validateFlags(
         Vp8x $vp8x,
         bool $iccProfile = false,
