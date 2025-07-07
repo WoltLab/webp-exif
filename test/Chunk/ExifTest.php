@@ -40,9 +40,9 @@ final class ExifTest extends TestCase
         $chunk = Exif::forBytes(0, $exifBytes);
         $parsedExif = $chunk->getParsedExif();
 
-        self::assertArrayHasKey('Model', $parsedExif);
+        self::assertNotNull($parsedExif);
 
-        /** @var array<string, int|string> $parsedExif */
+        self::assertArrayHasKey('Model', $parsedExif);
         self::assertEquals($parsedExif['Model'], 'Canon EOS 40D');
     }
 
