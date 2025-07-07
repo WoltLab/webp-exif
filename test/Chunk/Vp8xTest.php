@@ -5,9 +5,11 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
 use Woltlab\WebpExif\Chunk\Vp8x;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\UnexpectedChunk;
 use Woltlab\WebpExif\Exception\Vp8xAbsentChunk;
 use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 use WoltlabTest\WebpExif\Helper\ChunkGenerator;
@@ -142,6 +144,44 @@ final class Vp8xTest extends TestCase
 
         $chunkGenerator = new ChunkGenerator();
         $vp8x->filterChunks([$chunkGenerator->exif()]);
+    }
+
+    public function testRejectsAnimationMixedWithBitstreamChunk(): void
+    {
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+
+        $buffer = new StringBuffer();
+        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
+
+        // The uint32 length will be inserted here in the last step.
+
+        $buffer->insertString(str_repeat("\x00", 16));
+
+        foreach ($frameData as $anmf) {
+            $buffer->insertString($anmf);
+            if (strlen($anmf) % 2 === 1) {
+                $buffer->insertByte(0);
+            }
+        }
+
+        $buffer->setPosition(0)
+            ->insertInt($buffer->size())
+            ->setPosition(0);
+
+
+        $anmf = Anmf::fromBuffer($buffer);
+
+        $chunkGenerator = new ChunkGenerator();
+        $anim = $chunkGenerator->anim();
+        $vp8l = $chunkGenerator->vp8l();
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(animation: true));
+
+        $this->expectExceptionObject(new UnexpectedChunk("VP8L", -4));
+
+        $vp8x->filterChunks([$anim, $anmf, $anmf, $vp8l]);
     }
 
     private function validateFlags(
