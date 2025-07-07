@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Woltlab\WebpExif;
 
-use TypeError;
+use BadMethodCallException;
 use Woltlab\WebpExif\Chunk\Alph;
 use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Anmf;
@@ -172,13 +172,39 @@ final class WebP
     }
 
     /**
+     * @param list<UnknownChunk> $chunks
+     */
+    public function withUnknownChunks(array $chunks): self
+    {
+        $newChunks = $this->chunks;
+        foreach ($chunks as $chunk) {
+            if (!($chunk instanceof UnknownChunk)) {
+                throw new BadMethodCallException(
+                    \sprintf(
+                        "Expected a list of %s, received %s instead",
+                        UnknownChunk::class,
+                        \get_debug_type($chunk),
+                    ),
+                );
+            }
+
+            $newChunks[] = $chunk;
+        }
+
+        $webp = clone $this;
+        $webp->chunks = $newChunks;
+
+        return $webp;
+    }
+
+    /**
      * @param list<Chunk> $chunks
      */
     public static function fromChunks(array $chunks): self
     {
         foreach ($chunks as $chunk) {
             if (!($chunk instanceof Chunk)) {
-                throw new TypeError(
+                throw new BadMethodCallException(
                     \sprintf(
                         "Expected a list of %s, received %s instead",
                         Chunk::class,

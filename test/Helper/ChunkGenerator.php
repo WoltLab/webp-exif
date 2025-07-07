@@ -7,6 +7,7 @@ namespace WoltlabTest\WebpExif\Helper;
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use Woltlab\WebpExif\Chunk\Exif;
+use Woltlab\WebpExif\Chunk\UnknownChunk;
 use Woltlab\WebpExif\Chunk\Vp8;
 use Woltlab\WebpExif\Chunk\Vp8l;
 use Woltlab\WebpExif\Chunk\Vp8x;
@@ -59,6 +60,15 @@ final class ChunkGenerator
         }
 
         return Xmp::forBytes($offset, $bytes);
+    }
+
+    public function unknownChunk(string $fourCC, int $offset = 0, ?string $bytes = null): UnknownChunk
+    {
+        if ($bytes === null) {
+            $bytes = "\xDE\xAD\xBA\xBE";
+        }
+
+        return UnknownChunk::forBytes($fourCC, $offset, $bytes);
     }
 
     private function createBuffer(string $value = ''): Buffer

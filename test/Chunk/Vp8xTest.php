@@ -8,7 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
 use Woltlab\WebpExif\Chunk\Vp8x;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\Vp8xAbsentChunk;
 use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
+use WoltlabTest\WebpExif\Helper\ChunkGenerator;
 
 final class Vp8xTest extends TestCase
 {
@@ -100,6 +102,46 @@ final class Vp8xTest extends TestCase
     {
         $vp8x = Vp8x::fromBuffer($this->generateVp8x(iccProfile: true, alpha: true, exif: true, xmp: true, animation: true));
         $this->validateFlags($vp8x, iccProfile: true, alpha: true, exif: true, xmp: true, animation: true);
+    }
+
+    public function testReportsMissingIccProfile(): void
+    {
+        $this->expectExceptionObject(new Vp8xAbsentChunk('ICCP'));
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(iccProfile: true));
+
+        $chunkGenerator = new ChunkGenerator();
+        $vp8x->filterChunks([$chunkGenerator->exif()]);
+    }
+
+    public function testReportsMissingAlpha(): void
+    {
+        $this->expectExceptionObject(new Vp8xAbsentChunk('ALPH'));
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(alpha: true));
+
+        $chunkGenerator = new ChunkGenerator();
+        $vp8x->filterChunks([$chunkGenerator->exif()]);
+    }
+
+    public function testReportsMissingExif(): void
+    {
+        $this->expectExceptionObject(new Vp8xAbsentChunk('EXIF'));
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(exif: true));
+
+        $chunkGenerator = new ChunkGenerator();
+        $vp8x->filterChunks([$chunkGenerator->xmp()]);
+    }
+
+    public function testReportsMissingXmp(): void
+    {
+        $this->expectExceptionObject(new Vp8xAbsentChunk('XMP '));
+
+        $vp8x = Vp8x::fromBuffer($this->generateVp8x(xmp: true));
+
+        $chunkGenerator = new ChunkGenerator();
+        $vp8x->filterChunks([$chunkGenerator->exif()]);
     }
 
     private function validateFlags(

@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
+use Woltlab\WebpExif\Exception\MissingChunks;
 use Woltlab\WebpExif\WebP;
 use WoltlabTest\WebpExif\Helper\ChunkGenerator;
 
@@ -98,5 +100,29 @@ final class WebPTest extends TestCase
         $webp = $webp->withXmp($xmp);
 
         self::assertEquals($xmp, $webp->getXmp());
+    }
+
+    public function testRejectsZeroChunks(): void
+    {
+        $this->expectException(MissingChunks::class);
+
+        WebP::fromChunks([]);
+    }
+
+    public function testRejectsExtraChunksInVp8l(): void
+    {
+        $this->expectExceptionObject(new ExtraChunksInSimpleFormat("VP8L", ["EXIF"]));
+
+        $generator = new ChunkGenerator();
+        $vp8l = $generator->vp8l();
+        $exif = $generator->exif();
+        WebP::fromChunks([$vp8l, $exif]);
+    }
+
+    public function testRejectsCreationFromAnythingButChunks(): void
+    {
+        $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\Chunk, received string instead"));
+
+        WebP::fromChunks(["hello", "world"]);
     }
 }
