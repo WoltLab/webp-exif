@@ -9,7 +9,9 @@ use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Chunk\Exception\AnimationFrameWithoutBitstream;
 use Woltlab\WebpExif\Chunk\Exception\EmptyAnimationFrame;
 use Woltlab\WebpExif\ChunkType;
+use Woltlab\WebpExif\Exception\LengthOutOfBounds;
 use Woltlab\WebpExif\Exception\UnexpectedChunk;
+use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
 
 final class AnmfTest extends TestCase
 {
@@ -156,8 +158,29 @@ final class AnmfTest extends TestCase
     {
         $this->expectExceptionObject(new EmptyAnimationFrame(0));
 
-        $frameData = [];
-        $buffer = $this->generateAnmf($frameData);
+        $buffer = $this->generateAnmf([]);
+
+        Anmf::fromBuffer($buffer);
+    }
+
+    public function testRejectsMismatchingLength(): void
+    {
+        $this->expectExceptionObject(new LengthOutOfBounds(0xE0F, 0, 16));
+
+        $buffer = $this->generateAnmf([]);
+        $buffer->setPosition(0)
+            ->putInt(0xE0F)
+            ->setPosition(0);
+
+        Anmf::fromBuffer($buffer);
+    }
+
+    public function testRejectsUnexpectedEof(): void
+    {
+        $this->expectExceptionObject(new UnexpectedEndOfFile(8, 12));
+
+        $buffer = $this->generateAnmf([]);
+        $buffer->setPosition(0)->putInt(999);
 
         Anmf::fromBuffer($buffer);
     }
@@ -165,7 +188,7 @@ final class AnmfTest extends TestCase
     /**
      * @param list<string> $frameData
      */
-    private function generateAnmf(array $frameData = []): Buffer
+    private function generateAnmf(array $frameData): Buffer
     {
         $buffer = new StringBuffer();
         $buffer->setOrder(Buffer::LITTLE_ENDIAN);
