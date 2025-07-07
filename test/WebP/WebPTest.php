@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+use Nelexa\Buffer\Buffer;
+use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
+use Woltlab\WebpExif\Chunk\Anim;
+use Woltlab\WebpExif\Chunk\Anmf;
 use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
 use Woltlab\WebpExif\Exception\MissingChunks;
 use Woltlab\WebpExif\WebP;
@@ -123,6 +127,7 @@ final class WebPTest extends TestCase
     {
         $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\Chunk, received string instead"));
 
+        // @phpstan-ignore argument.type
         WebP::fromChunks(["hello", "world"]);
     }
 
@@ -137,6 +142,43 @@ final class WebPTest extends TestCase
 
         $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\UnknownChunk, received Woltlab\WebpExif\Chunk\Exif instead"));
 
+        // @phpstan-ignore argument.type
         $webp->withUnknownChunks([$exif]);
+    }
+
+    public function testSkipsBitstreamWhenAnimationIsPresent(): void
+    {
+        $frameData = [
+            "VP8L\x06\x00\x00\x00\x2F\x41\x6C\x6F\x00\x6B",
+        ];
+
+        $buffer = new StringBuffer();
+        $buffer->setOrder(Buffer::LITTLE_ENDIAN);
+
+        // The uint32 length will be inserted here in the last step.
+
+        $buffer->insertString(str_repeat("\x00", 16));
+
+        foreach ($frameData as $anmf) {
+            $buffer->insertString($anmf);
+            if (strlen($anmf) % 2 === 1) {
+                $buffer->insertByte(0);
+            }
+        }
+
+        $buffer->setPosition(0)
+            ->insertInt($buffer->size())
+            ->setPosition(0);
+
+
+        $anmf = Anmf::fromBuffer($buffer);
+
+        $generator = new ChunkGenerator();
+        $vp8x = $generator->vp8x(animation: true);
+        $anim = $generator->anim();
+        $webp = WebP::fromChunks([$vp8x, $anim, $anmf, $anmf]);
+
+        self::assertNotNull($webp->getAnimation());
+        self::assertNull($webp->getBitstream());
     }
 }

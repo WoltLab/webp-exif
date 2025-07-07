@@ -6,6 +6,7 @@ namespace WoltlabTest\WebpExif\Helper;
 
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
+use Woltlab\WebpExif\Chunk\Anim;
 use Woltlab\WebpExif\Chunk\Exif;
 use Woltlab\WebpExif\Chunk\Iccp;
 use Woltlab\WebpExif\Chunk\UnknownChunk;
@@ -16,6 +17,15 @@ use Woltlab\WebpExif\Chunk\Xmp;
 
 final class ChunkGenerator
 {
+    public function anim(int $offset = 0, ?string $bytes = null): Anim
+    {
+        if ($bytes === null) {
+            $bytes = "\xC0\xFF\xEE";
+        }
+
+        return Anim::forBytes($offset, $bytes);
+    }
+
     public function exif(int $offset = 0, ?string $bytes = null): Exif
     {
         if ($bytes === null) {
