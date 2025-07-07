@@ -172,32 +172,6 @@ final class WebP
     }
 
     /**
-     * @return array{'length': int, 'width': int, 'height': int, 'chunks': list<string>}
-     */
-    public function debugInfo(): array
-    {
-        $chunkInfo = \array_map(
-            static function (Chunk $chunk) {
-                return \sprintf(
-                    "Chunk %s (offset %d [0x%X], length %d)",
-                    $chunk->getFourCC(),
-                    $chunk->getOffset(),
-                    $chunk->getOffset(),
-                    $chunk->getLength(),
-                );
-            },
-            $this->chunks,
-        );
-
-        return [
-            'length' => $this->getByteLength(),
-            'width' => $this->width,
-            'height' => $this->height,
-            'chunks' => $chunkInfo,
-        ];
-    }
-
-    /**
      * @param list<Chunk> $chunks
      */
     public static function fromChunks(array $chunks): self
