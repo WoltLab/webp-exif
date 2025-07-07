@@ -125,4 +125,18 @@ final class WebPTest extends TestCase
 
         WebP::fromChunks(["hello", "world"]);
     }
+
+    public function testRejectsArbitraryDataForUnknownChunks(): void
+    {
+        $generator = new ChunkGenerator();
+        $vp8x = $generator->vp8x();
+        $vp8l = $generator->vp8l();
+        $webp = WebP::fromChunks([$vp8x, $vp8l]);
+
+        $exif = $generator->exif();
+
+        $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\UnknownChunk, received Woltlab\WebpExif\Chunk\Exif instead"));
+
+        $webp->withUnknownChunks([$exif]);
+    }
 }
