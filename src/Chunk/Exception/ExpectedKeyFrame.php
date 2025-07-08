@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
+use WoltLab\WebpExif\Exception\WebpExifException;
 
 /**
  * @author      Alexander Ebert
@@ -13,7 +14,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class ExpectedKeyFrame extends RuntimeException
+final class ExpectedKeyFrame extends RuntimeException implements WebpExifException
 {
     public function __construct()
     {

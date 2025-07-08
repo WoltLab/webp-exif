@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class MissingChunks extends RuntimeException
+final class MissingChunks extends RuntimeException implements WebpExifException
 {
     public function __construct()
     {

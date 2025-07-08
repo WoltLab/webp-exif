@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @internal
  */
-final class Vp8xHeaderLengthMismatch extends OutOfBoundsException
+final class Vp8xHeaderLengthMismatch extends OutOfBoundsException implements WebpExifException
 {
     public function __construct(int $expected, int $found)
     {

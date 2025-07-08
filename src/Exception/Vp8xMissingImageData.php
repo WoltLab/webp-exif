@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @internal
  */
-final class Vp8xMissingImageData extends OutOfBoundsException
+final class Vp8xMissingImageData extends OutOfBoundsException implements WebpExifException
 {
     public function __construct(bool $stillImage)
     {

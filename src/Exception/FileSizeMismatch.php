@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class FileSizeMismatch extends RuntimeException
+final class FileSizeMismatch extends RuntimeException implements WebpExifException
 {
     public function __construct(int $expected, int $found)
     {

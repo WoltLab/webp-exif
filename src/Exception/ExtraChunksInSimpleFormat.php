@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class ExtraChunksInSimpleFormat extends RuntimeException
+final class ExtraChunksInSimpleFormat extends RuntimeException implements WebpExifException
 {
     /** @param string[] $chunkNames */
     public function __construct(string $fourCC, array $chunkNames)

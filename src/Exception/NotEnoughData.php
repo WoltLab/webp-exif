@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class NotEnoughData extends RuntimeException
+final class NotEnoughData extends RuntimeException implements WebpExifException
 {
     public function __construct(int $expected, int $found)
     {

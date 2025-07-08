@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class Vp8xWithoutChunks extends RuntimeException
+final class Vp8xWithoutChunks extends RuntimeException implements WebpExifException
 {
     public function __construct()
     {

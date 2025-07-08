@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class Vp8xAbsentChunk extends RuntimeException
+final class Vp8xAbsentChunk extends RuntimeException implements WebpExifException
 {
     public function __construct(string $fourCC)
     {

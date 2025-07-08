@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class UnexpectedEndOfFile extends RuntimeException
+final class UnexpectedEndOfFile extends RuntimeException implements WebpExifException
 {
     public function __construct(int $offset, int $remainingBytes)
     {

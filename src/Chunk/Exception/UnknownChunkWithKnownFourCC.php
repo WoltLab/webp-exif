@@ -6,6 +6,7 @@ namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
 use WoltLab\WebpExif\Chunk\UnknownChunk;
+use WoltLab\WebpExif\Exception\WebpExifException;
 
 /**
  * @author      Alexander Ebert
@@ -14,7 +15,7 @@ use WoltLab\WebpExif\Chunk\UnknownChunk;
  *
  * @internal
  */
-final class UnknownChunkWithKnownFourCC extends RuntimeException
+final class UnknownChunkWithKnownFourCC extends RuntimeException implements WebpExifException
 {
     public function __construct(string $fourCC)
     {

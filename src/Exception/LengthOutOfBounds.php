@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @internal
  */
-final class LengthOutOfBounds extends OutOfBoundsException
+final class LengthOutOfBounds extends OutOfBoundsException implements WebpExifException
 {
     public function __construct(int $length, int $offset, int $remainingBytes)
     {

@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class UnexpectedChunk extends RuntimeException
+final class UnexpectedChunk extends RuntimeException implements WebpExifException
 {
     public function __construct(string $fourCC, int $offset)
     {

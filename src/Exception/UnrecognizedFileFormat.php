@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @internal
  */
-final class UnrecognizedFileFormat extends RuntimeException
+final class UnrecognizedFileFormat extends RuntimeException implements WebpExifException
 {
     public function __construct()
     {

@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @internal
  */
-final class ExtraVp8xChunk extends OutOfBoundsException
+final class ExtraVp8xChunk extends OutOfBoundsException implements WebpExifException
 {
     public function __construct()
     {
