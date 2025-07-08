@@ -5,12 +5,12 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Decoder;
-use Woltlab\WebpExif\Exception\ExtraVp8xChunk;
-use Woltlab\WebpExif\Exception\LengthOutOfBounds;
-use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
-use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
-use Woltlab\WebpExif\Exception\Vp8xWithoutChunks;
+use WoltLab\WebpExif\Decoder;
+use WoltLab\WebpExif\Exception\ExtraVp8xChunk;
+use WoltLab\WebpExif\Exception\LengthOutOfBounds;
+use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
+use WoltLab\WebpExif\Exception\Vp8xMissingImageData;
+use WoltLab\WebpExif\Exception\Vp8xWithoutChunks;
 
 final class DecodeExtendedHeaderTest extends TestCase
 {

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Iccp;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Iccp;
+use WoltLab\WebpExif\ChunkType;
 
 final class IccpTest extends TestCase
 {

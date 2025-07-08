@@ -5,14 +5,14 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Anmf;
-use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
-use Woltlab\WebpExif\Chunk\Vp8x;
-use Woltlab\WebpExif\ChunkType;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
-use Woltlab\WebpExif\Exception\Vp8xAbsentChunk;
-use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
-use WoltlabTest\WebpExif\Helper\ChunkGenerator;
+use WoltLab\WebpExif\Chunk\Anmf;
+use WoltLab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
+use WoltLab\WebpExif\Chunk\Vp8x;
+use WoltLab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Exception\UnexpectedChunk;
+use WoltLab\WebpExif\Exception\Vp8xAbsentChunk;
+use WoltLab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
+use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
 final class Vp8xTest extends TestCase
 {

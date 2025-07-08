@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace WoltlabTest\WebpExif\Helper;
+namespace WoltLabTest\WebpExif\Helper;
 
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\Chunk\Exif;
-use Woltlab\WebpExif\Chunk\Iccp;
-use Woltlab\WebpExif\Chunk\UnknownChunk;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\Chunk\Vp8l;
-use Woltlab\WebpExif\Chunk\Vp8x;
-use Woltlab\WebpExif\Chunk\Xmp;
+use WoltLab\WebpExif\Chunk\Anim;
+use WoltLab\WebpExif\Chunk\Exif;
+use WoltLab\WebpExif\Chunk\Iccp;
+use WoltLab\WebpExif\Chunk\UnknownChunk;
+use WoltLab\WebpExif\Chunk\Vp8;
+use WoltLab\WebpExif\Chunk\Vp8l;
+use WoltLab\WebpExif\Chunk\Vp8x;
+use WoltLab\WebpExif\Chunk\Xmp;
 
 final class ChunkGenerator
 {

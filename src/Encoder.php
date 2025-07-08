@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif;
+namespace WoltLab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
-use Woltlab\WebpExif\Chunk\Chunk;
+use WoltLab\WebpExif\Chunk\Chunk;
 
 final class Encoder
 {

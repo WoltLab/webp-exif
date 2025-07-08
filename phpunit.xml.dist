@@ -12,7 +12,7 @@
     displayDetailsOnSkippedTests="true"
 >
     <testsuites>
-        <testsuite name="Woltlab\\WebpExif Tests">
+        <testsuite name="WoltLab\\WebpExif Tests">
             <directory>./test</directory>
         </testsuite>
     </testsuites>

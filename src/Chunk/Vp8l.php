@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
-use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
-use Woltlab\WebpExif\Chunk\Exception\UnsupportedVersion;
-use Woltlab\WebpExif\Exception\LengthOutOfBounds;
+use WoltLab\WebpExif\Chunk\Exception\MissingMagicByte;
+use WoltLab\WebpExif\Chunk\Exception\UnsupportedVersion;
+use WoltLab\WebpExif\Exception\LengthOutOfBounds;
 
 final class Vp8l extends Chunk
 {

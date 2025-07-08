@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Decoder;
-use Woltlab\WebpExif\Exception\FileSizeMismatch;
-use Woltlab\WebpExif\Exception\NotEnoughData;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
-use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
-use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
+use WoltLab\WebpExif\Decoder;
+use WoltLab\WebpExif\Exception\FileSizeMismatch;
+use WoltLab\WebpExif\Exception\NotEnoughData;
+use WoltLab\WebpExif\Exception\UnexpectedChunk;
+use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
+use WoltLab\WebpExif\Exception\UnrecognizedFileFormat;
 
 final class DecoderTest extends TestCase
 {

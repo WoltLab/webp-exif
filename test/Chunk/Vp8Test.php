@@ -5,11 +5,11 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
-use Woltlab\WebpExif\Chunk\Exception\MissingMagicByte;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\ChunkType;
-use Woltlab\WebpExif\Exception\LengthOutOfBounds;
+use WoltLab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
+use WoltLab\WebpExif\Chunk\Exception\MissingMagicByte;
+use WoltLab\WebpExif\Chunk\Vp8;
+use WoltLab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Exception\LengthOutOfBounds;
 
 final class Vp8Test extends TestCase
 {

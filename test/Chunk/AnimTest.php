@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Anim;
+use WoltLab\WebpExif\ChunkType;
 
 final class AnimTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Exception;
+namespace WoltLab\WebpExif\Exception;
 
 use RuntimeException;
 

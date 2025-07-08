@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Xmp;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Xmp;
+use WoltLab\WebpExif\ChunkType;
 
 final class XmpTest extends TestCase
 {

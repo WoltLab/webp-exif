@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif;
+namespace WoltLab\WebpExif;
 
 use BadMethodCallException;
-use Woltlab\WebpExif\Chunk\Alph;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\Chunk\Anmf;
-use Woltlab\WebpExif\Chunk\Chunk;
-use Woltlab\WebpExif\Chunk\Exif;
-use Woltlab\WebpExif\Chunk\Iccp;
-use Woltlab\WebpExif\Chunk\UnknownChunk;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\Chunk\Vp8l;
-use Woltlab\WebpExif\Chunk\Vp8x;
-use Woltlab\WebpExif\Chunk\Xmp;
-use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
-use Woltlab\WebpExif\Exception\MissingChunks;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
+use WoltLab\WebpExif\Chunk\Alph;
+use WoltLab\WebpExif\Chunk\Anim;
+use WoltLab\WebpExif\Chunk\Anmf;
+use WoltLab\WebpExif\Chunk\Chunk;
+use WoltLab\WebpExif\Chunk\Exif;
+use WoltLab\WebpExif\Chunk\Iccp;
+use WoltLab\WebpExif\Chunk\UnknownChunk;
+use WoltLab\WebpExif\Chunk\Vp8;
+use WoltLab\WebpExif\Chunk\Vp8l;
+use WoltLab\WebpExif\Chunk\Vp8x;
+use WoltLab\WebpExif\Chunk\Xmp;
+use WoltLab\WebpExif\Exception\ExtraChunksInSimpleFormat;
+use WoltLab\WebpExif\Exception\MissingChunks;
+use WoltLab\WebpExif\Exception\UnexpectedChunk;
 
 final class WebP
 {

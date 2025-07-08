@@ -24,12 +24,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Woltlab\\WebpExif\\": "src/"
+      "WoltLab\\WebpExif\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "WoltlabTest\\WebpExif\\": "test/"
+      "WoltLabTest\\WebpExif\\": "test/"
     }
   },
   "scripts": {

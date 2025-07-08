@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
 use Override;
-use Woltlab\WebpExif\Chunk\Exception\AnimationFrameWithoutBitstream;
-use Woltlab\WebpExif\Chunk\Exception\EmptyAnimationFrame;
-use Woltlab\WebpExif\Decoder;
-use Woltlab\WebpExif\Exception\LengthOutOfBounds;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
-use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
+use WoltLab\WebpExif\Chunk\Exception\AnimationFrameWithoutBitstream;
+use WoltLab\WebpExif\Chunk\Exception\EmptyAnimationFrame;
+use WoltLab\WebpExif\Decoder;
+use WoltLab\WebpExif\Exception\LengthOutOfBounds;
+use WoltLab\WebpExif\Exception\UnexpectedChunk;
+use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
 
 final class Anmf extends Chunk
 {

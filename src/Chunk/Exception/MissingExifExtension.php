@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk\Exception;
+namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
 

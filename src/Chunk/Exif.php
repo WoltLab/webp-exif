@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
-use Woltlab\WebpExif\Chunk\Exception\MissingExifExtension;
+use WoltLab\WebpExif\Chunk\Exception\MissingExifExtension;
 
 final class Exif extends Chunk
 {

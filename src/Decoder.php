@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif;
+namespace WoltLab\WebpExif;
 
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
-use Woltlab\WebpExif\Chunk\Alph;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\Chunk\Anmf;
-use Woltlab\WebpExif\Chunk\Chunk;
-use Woltlab\WebpExif\Chunk\Exif;
-use Woltlab\WebpExif\Chunk\Iccp;
-use Woltlab\WebpExif\Chunk\UnknownChunk;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\Chunk\Vp8l;
-use Woltlab\WebpExif\Chunk\Vp8x;
-use Woltlab\WebpExif\Chunk\Xmp;
-use Woltlab\WebpExif\Exception\FileSizeMismatch;
-use Woltlab\WebpExif\Exception\LengthOutOfBounds;
-use Woltlab\WebpExif\Exception\NotEnoughData;
-use Woltlab\WebpExif\Exception\UnexpectedEndOfFile;
-use Woltlab\WebpExif\Exception\UnrecognizedFileFormat;
+use WoltLab\WebpExif\Chunk\Alph;
+use WoltLab\WebpExif\Chunk\Anim;
+use WoltLab\WebpExif\Chunk\Anmf;
+use WoltLab\WebpExif\Chunk\Chunk;
+use WoltLab\WebpExif\Chunk\Exif;
+use WoltLab\WebpExif\Chunk\Iccp;
+use WoltLab\WebpExif\Chunk\UnknownChunk;
+use WoltLab\WebpExif\Chunk\Vp8;
+use WoltLab\WebpExif\Chunk\Vp8l;
+use WoltLab\WebpExif\Chunk\Vp8x;
+use WoltLab\WebpExif\Chunk\Xmp;
+use WoltLab\WebpExif\Exception\FileSizeMismatch;
+use WoltLab\WebpExif\Exception\LengthOutOfBounds;
+use WoltLab\WebpExif\Exception\NotEnoughData;
+use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
+use WoltLab\WebpExif\Exception\UnrecognizedFileFormat;
 
 final class Decoder
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
 final class Xmp extends Chunk
 {

@@ -6,11 +6,11 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Vp8;
-use Woltlab\WebpExif\Decoder;
-use Woltlab\WebpExif\Encoder;
-use Woltlab\WebpExif\WebP;
-use WoltlabTest\WebpExif\Helper\ChunkGenerator;
+use WoltLab\WebpExif\Chunk\Vp8;
+use WoltLab\WebpExif\Decoder;
+use WoltLab\WebpExif\Encoder;
+use WoltLab\WebpExif\WebP;
+use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
 final class EncoderTest extends TestCase
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Anmf;
-use Woltlab\WebpExif\Decoder;
+use WoltLab\WebpExif\Chunk\Anmf;
+use WoltLab\WebpExif\Decoder;
 
 final class DecodeAssetTest extends TestCase
 {

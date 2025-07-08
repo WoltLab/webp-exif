@@ -5,12 +5,11 @@ declare(strict_types=1);
 use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Anim;
-use Woltlab\WebpExif\Chunk\Anmf;
-use Woltlab\WebpExif\Exception\ExtraChunksInSimpleFormat;
-use Woltlab\WebpExif\Exception\MissingChunks;
-use Woltlab\WebpExif\WebP;
-use WoltlabTest\WebpExif\Helper\ChunkGenerator;
+use WoltLab\WebpExif\Chunk\Anmf;
+use WoltLab\WebpExif\Exception\ExtraChunksInSimpleFormat;
+use WoltLab\WebpExif\Exception\MissingChunks;
+use WoltLab\WebpExif\WebP;
+use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
 final class WebPTest extends TestCase
 {
@@ -125,7 +124,7 @@ final class WebPTest extends TestCase
 
     public function testRejectsCreationFromAnythingButChunks(): void
     {
-        $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\Chunk, received string instead"));
+        $this->expectExceptionObject(new BadMethodCallException("Expected a list of WoltLab\WebpExif\Chunk\Chunk, received string instead"));
 
         // @phpstan-ignore argument.type
         WebP::fromChunks(["hello", "world"]);
@@ -140,7 +139,7 @@ final class WebPTest extends TestCase
 
         $exif = $generator->exif();
 
-        $this->expectExceptionObject(new BadMethodCallException("Expected a list of Woltlab\WebpExif\Chunk\UnknownChunk, received Woltlab\WebpExif\Chunk\Exif instead"));
+        $this->expectExceptionObject(new BadMethodCallException("Expected a list of WoltLab\WebpExif\Chunk\UnknownChunk, received WoltLab\WebpExif\Chunk\Exif instead"));
 
         // @phpstan-ignore argument.type
         $webp->withUnknownChunks([$exif]);

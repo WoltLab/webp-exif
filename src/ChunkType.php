@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif;
+namespace WoltLab\WebpExif;
 
 enum ChunkType
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
-use Woltlab\WebpExif\Chunk\Exception\UnknownChunkWithKnownFourCC;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Exception\UnknownChunkWithKnownFourCC;
+use WoltLab\WebpExif\ChunkType;
 
 final class UnknownChunk extends Chunk
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk;
+namespace WoltLab\WebpExif\Chunk;
 
 use Nelexa\Buffer\Buffer;
-use Woltlab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
-use Woltlab\WebpExif\Exception\ExtraVp8xChunk;
-use Woltlab\WebpExif\Exception\UnexpectedChunk;
-use Woltlab\WebpExif\Exception\Vp8xAbsentChunk;
-use Woltlab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
-use Woltlab\WebpExif\Exception\Vp8xMissingImageData;
-use Woltlab\WebpExif\Exception\Vp8xWithoutChunks;
+use WoltLab\WebpExif\Chunk\Exception\DimensionsExceedInt32;
+use WoltLab\WebpExif\Exception\ExtraVp8xChunk;
+use WoltLab\WebpExif\Exception\UnexpectedChunk;
+use WoltLab\WebpExif\Exception\Vp8xAbsentChunk;
+use WoltLab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
+use WoltLab\WebpExif\Exception\Vp8xMissingImageData;
+use WoltLab\WebpExif\Exception\Vp8xWithoutChunks;
 
 final class Vp8x extends Chunk
 {

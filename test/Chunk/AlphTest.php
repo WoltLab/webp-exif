@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Alph;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Alph;
+use WoltLab\WebpExif\ChunkType;
 
 final class AlphTest extends TestCase
 {

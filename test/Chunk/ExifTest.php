@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use Woltlab\WebpExif\Chunk\Exif;
-use Woltlab\WebpExif\ChunkType;
+use WoltLab\WebpExif\Chunk\Exif;
+use WoltLab\WebpExif\ChunkType;
 
 final class ExifTest extends TestCase
 {

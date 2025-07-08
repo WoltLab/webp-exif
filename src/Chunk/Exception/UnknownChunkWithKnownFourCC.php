@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Woltlab\WebpExif\Chunk\Exception;
+namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
-use Woltlab\WebpExif\Chunk\UnknownChunk;
+use WoltLab\WebpExif\Chunk\UnknownChunk;
 
 /** @internal */
 final class UnknownChunkWithKnownFourCC extends RuntimeException
