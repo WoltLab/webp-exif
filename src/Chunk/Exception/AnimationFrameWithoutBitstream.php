@@ -6,7 +6,13 @@ namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
 
-/** @internal */
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ *
+ * @internal
+ */
 final class AnimationFrameWithoutBitstream extends RuntimeException
 {
     public function __construct(int $offset)

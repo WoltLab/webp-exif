@@ -14,6 +14,11 @@ use WoltLab\WebpExif\Exception\Vp8xAbsentChunk;
 use WoltLab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Vp8xTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void

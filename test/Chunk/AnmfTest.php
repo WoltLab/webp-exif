@@ -13,6 +13,11 @@ use WoltLab\WebpExif\Exception\LengthOutOfBounds;
 use WoltLab\WebpExif\Exception\UnexpectedChunk;
 use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class AnmfTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void

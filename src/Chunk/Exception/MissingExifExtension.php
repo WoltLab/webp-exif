@@ -6,6 +6,13 @@ namespace WoltLab\WebpExif\Chunk\Exception;
 
 use RuntimeException;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ *
+ * @internal
+ */
 final class MissingExifExtension extends RuntimeException {
     /**
      * @codeCoverageIgnore

@@ -20,6 +20,13 @@ use WoltLab\WebpExif\Exception\ExtraChunksInSimpleFormat;
 use WoltLab\WebpExif\Exception\MissingChunks;
 use WoltLab\WebpExif\Exception\UnexpectedChunk;
 
+/**
+ * Represents a deconstructed WebP image.
+ *
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class WebP
 {
     private function __construct(
@@ -133,6 +140,9 @@ final class WebP
         );
     }
 
+    /**
+     * Adds or removes EXIF data.
+     */
     public function withExif(?Exif $exif): self
     {
         $chunks = \array_values(
@@ -152,6 +162,9 @@ final class WebP
         return $webp;
     }
 
+    /**
+     * Adds or removes an ICC profile.
+     */
     public function withIccp(?Iccp $iccp): self
     {
         $chunks = \array_values(
@@ -171,6 +184,9 @@ final class WebP
         return $webp;
     }
 
+    /**
+     * Adds or removes XMP data.
+     */
     public function withXmp(?Xmp $xmp): self
     {
         $chunks = \array_values(
@@ -191,6 +207,9 @@ final class WebP
     }
 
     /**
+     * Adds a list of unhandled chunks. It is not possibly to remove unknown
+     * chunks at this time.
+     *
      * @param list<UnknownChunk> $chunks
      */
     public function withUnknownChunks(array $chunks): self
@@ -217,6 +236,9 @@ final class WebP
     }
 
     /**
+     * Creates a new WebP object from the provided chunks. Please use the
+     * `Decoder` class to decode the binary data of a WebP image.
+     *
      * @param list<Chunk> $chunks
      */
     public static function fromChunks(array $chunks): self

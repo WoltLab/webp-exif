@@ -11,6 +11,11 @@ use WoltLab\WebpExif\Chunk\Vp8l;
 use WoltLab\WebpExif\ChunkType;
 use WoltLab\WebpExif\Exception\LengthOutOfBounds;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Vp8lTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void

@@ -11,6 +11,11 @@ use WoltLab\WebpExif\Exception\MissingChunks;
 use WoltLab\WebpExif\WebP;
 use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class WebPTest extends TestCase
 {
     public function testRemoveExif(): void

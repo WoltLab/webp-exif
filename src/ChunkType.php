@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace WoltLab\WebpExif;
 
+/**
+ * List of the currently supported chunk types.
+ *
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 enum ChunkType
 {
     case ALPH;

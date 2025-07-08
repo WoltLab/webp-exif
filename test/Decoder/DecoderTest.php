@@ -10,6 +10,11 @@ use WoltLab\WebpExif\Exception\UnexpectedChunk;
 use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
 use WoltLab\WebpExif\Exception\UnrecognizedFileFormat;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class DecoderTest extends TestCase
 {
     public function testFileSizeTooShort(): void

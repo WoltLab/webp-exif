@@ -9,6 +9,11 @@ use WoltLab\WebpExif\Chunk\Exception\ExpectedKeyFrame;
 use WoltLab\WebpExif\Chunk\Exception\MissingMagicByte;
 use WoltLab\WebpExif\Exception\LengthOutOfBounds;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Vp8 extends Chunk
 {
     private function __construct(

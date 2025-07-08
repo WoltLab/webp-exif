@@ -6,7 +6,13 @@ namespace WoltLab\WebpExif\Exception;
 
 use OutOfBoundsException;
 
-/** @internal */
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ *
+ * @internal
+ */
 final class ExtraVp8xChunk extends OutOfBoundsException
 {
     public function __construct()

@@ -6,6 +6,11 @@ use PHPUnit\Framework\TestCase;
 use WoltLab\WebpExif\Chunk\Exif;
 use WoltLab\WebpExif\ChunkType;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class ExifTest extends TestCase
 {
     public function testReportsCorrectFourCC(): void

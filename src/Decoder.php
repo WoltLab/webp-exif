@@ -23,6 +23,13 @@ use WoltLab\WebpExif\Exception\NotEnoughData;
 use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
 use WoltLab\WebpExif\Exception\UnrecognizedFileFormat;
 
+/**
+ * Decodes a WebP image from binary data.
+ *
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Decoder
 {
     public function fromBinary(string $binary): WebP

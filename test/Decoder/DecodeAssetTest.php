@@ -7,6 +7,11 @@ use PHPUnit\Framework\TestCase;
 use WoltLab\WebpExif\Chunk\Anmf;
 use WoltLab\WebpExif\Decoder;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class DecodeAssetTest extends TestCase
 {
     #[DataProvider('pathnameProvider')]

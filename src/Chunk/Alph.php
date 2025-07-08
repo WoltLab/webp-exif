@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace WoltLab\WebpExif\Chunk;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Alph extends Chunk
 {
     private function __construct(int $offset, string $data)

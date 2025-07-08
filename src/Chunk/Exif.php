@@ -6,6 +6,11 @@ namespace WoltLab\WebpExif\Chunk;
 
 use WoltLab\WebpExif\Chunk\Exception\MissingExifExtension;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Exif extends Chunk
 {
     private function __construct(int $offset, string $data)

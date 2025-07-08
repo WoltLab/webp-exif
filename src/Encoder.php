@@ -8,6 +8,13 @@ use Nelexa\Buffer\Buffer;
 use Nelexa\Buffer\StringBuffer;
 use WoltLab\WebpExif\Chunk\Chunk;
 
+/**
+ * Encodes the WebP object into the binary format.
+ *
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Encoder
 {
     /**

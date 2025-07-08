@@ -13,6 +13,11 @@ use WoltLab\WebpExif\Exception\Vp8xHeaderLengthMismatch;
 use WoltLab\WebpExif\Exception\Vp8xMissingImageData;
 use WoltLab\WebpExif\Exception\Vp8xWithoutChunks;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class Vp8x extends Chunk
 {
     private function __construct(
@@ -89,7 +94,7 @@ final class Vp8x extends Chunk
             static fn($chunk) => ($chunk instanceof Vp8) || ($chunk instanceof Vp8l)
         );
 
-        // The VP8X chunk most contain image data that can come in two flavors:
+        // The VP8X chunk must contain image data that can come in two flavors:
         //  1. Still images must contain either a VP8 or VP8L chunk.
         //  2. Animated images must contain multiple frames.
         if ($this->animation) {

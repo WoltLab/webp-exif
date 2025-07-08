@@ -6,7 +6,13 @@ namespace WoltLab\WebpExif\Chunk\Exception;
 
 use OutOfRangeException;
 
-/** @internal */
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ *
+ * @internal
+ */
 final class DimensionsExceedInt32 extends OutOfRangeException
 {
     public function __construct(int $width, int $height)

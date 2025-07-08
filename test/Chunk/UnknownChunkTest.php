@@ -6,6 +6,11 @@ use PHPUnit\Framework\TestCase;
 use WoltLab\WebpExif\Chunk\Exception\UnknownChunkWithKnownFourCC;
 use WoltLab\WebpExif\Chunk\UnknownChunk;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class UnknownChunkTest extends TestCase
 {
     public function testRejectsKnownFourCC(): void

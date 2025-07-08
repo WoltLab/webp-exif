@@ -12,6 +12,11 @@ use WoltLab\WebpExif\Encoder;
 use WoltLab\WebpExif\WebP;
 use WoltLabTest\WebpExif\Helper\ChunkGenerator;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class EncoderTest extends TestCase
 {
     public function testEncodeSimpleVp8(): void

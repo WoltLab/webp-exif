@@ -15,6 +15,11 @@ use WoltLab\WebpExif\Chunk\Vp8l;
 use WoltLab\WebpExif\Chunk\Vp8x;
 use WoltLab\WebpExif\Chunk\Xmp;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class ChunkGenerator
 {
     public function anim(int $offset = 0, ?string $bytes = null): Anim

@@ -12,6 +12,11 @@ use WoltLab\WebpExif\Exception\UnexpectedEndOfFile;
 use WoltLab\WebpExif\Exception\Vp8xMissingImageData;
 use WoltLab\WebpExif\Exception\Vp8xWithoutChunks;
 
+/**
+ * @author      Alexander Ebert
+ * @copyright   2025 WoltLab GmbH
+ * @license     The MIT License <https://opensource.org/license/mit>
+ */
 final class DecodeExtendedHeaderTest extends TestCase
 {
     public function testRejectNestedVp8x(): void
